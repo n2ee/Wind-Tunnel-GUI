@@ -18,8 +18,20 @@ from Phidget22.PhidgetException import PhidgetException
 
 from TunnelConfig import TunnelConfig
 from SensorSample import SensorSample
-from ForceBalanceBridge import ForceBalanceBridge
-from AnalogInput import AnalogInput
+
+
+usePhidget21 = TunnelConfig().getItem("PhidgetBoards", "usePhidget21")
+
+if (usePhidget21 == None):
+    usePhidget21 = "false"
+    
+if (usePhidget21.tolower() == "true"):
+    from ForceBalanceBridge21 import ForceBalanceBridge
+    from AnalogInput21 import AnalogInput
+
+else:
+    from ForceBalanceBridge import ForceBalanceBridge
+    from AnalogInput import AnalogInput
 
 class SensorReader(QThread):
     
@@ -103,10 +115,10 @@ class SensorReader(QThread):
                 currentSample.airspeed = self.airspeed.getVoltage()
                 currentSample.hotwire = self.hotwire.getVoltage()
                 currentSample.aoa = self.aoa.getVoltage()
-                currentSample.liftLeft = self.liftLeft.getVoltageRatio()
-                currentSample.liftCenter = self.liftCenter.getVoltageRatio()
-                currentSample.liftRight = self.liftRight.getVoltageRatio()
-                currentSample.drag = self.drag.getVoltageRatio()
+                currentSample.liftLeft = self.liftLeft.getBridgeValue()
+                currentSample.liftCenter = self.liftCenter.getBridgeValue()
+                currentSample.liftRight = self.liftRight.getBridgeValue()
+                currentSample.drag = self.drag.getBridgeValue()
                 currentSample.timestamp = datetime.datetime.now()
                 self.dataQ.put_nowait(currentSample)
             except PhidgetException as e:

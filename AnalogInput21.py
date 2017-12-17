@@ -11,28 +11,28 @@ Created on Tue Nov 21 15:16:44 2017
 import time
 import datetime
 
-from Phidget22.PhidgetException import PhidgetException
-from Phidget22.Devices.VoltageInput import VoltageInput
+from Phidgets.PhidgetException import PhidgetException
+from Phidgets.Devices.InterfaceKit import InterfaceKit
 
 
-class AnalogInput(VoltageInput):
+class AnalogInput(InterfaceKit):
     
     def __init__(self, serialNo, channel):
-        VoltageInput.__init__(self)
-        
-        self.setDeviceSerialNumber(serialNo)
-        self.setChannel(channel)
+        InterfaceKit.__init__(self)
+
+        self.channel = channel
 
         try:
-            self.openWaitForAttachment(10000)
+            self.openPhidget(serialNo)
+            self.waitForAttach(10000)
         except PhidgetException as e:
             print("PhidgetException on open - code %i: %s" % (e.code, e.details))
             raise PhidgetException(e.code)
-
-        self.setDataInterval(self.getMinDataInterval())
+            
+        self.setDataRate(self.getDataRateMax())
         
         def getVoltage(self):
-            return self.getVoltage()
+            return self.getSensorValue(self.channel)
         
 
 def main():

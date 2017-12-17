@@ -11,37 +11,38 @@ Created on Tue Nov 21 15:16:44 2017
 import time
 import datetime
 
-from Phidget22.PhidgetException import PhidgetException
-from Phidget22.Devices.VoltageInput import VoltageInput
+from Phidgets.PhidgetException import PhidgetException
+from Phidgets.Devices.Bridge import Bridge, BridgeGain
 
 
-class AnalogInput(VoltageInput):
+class ForceBalanceBridge(Bridge):
     
     def __init__(self, serialNo, channel):
-        VoltageInput.__init__(self)
+        Bridge.__init__(self)
         
-        self.setDeviceSerialNumber(serialNo)
-        self.setChannel(channel)
+        self.channel = channel
 
         try:
-            self.openWaitForAttachment(10000)
+            self.openPhidget(serialNo)
+            self.waitForAttach(10000)
         except PhidgetException as e:
             print("PhidgetException on open - code %i: %s" % (e.code, e.details))
             raise PhidgetException(e.code)
+            
+        self.setDataRate(self.getDataRateMax())
+        self.setGain(self.channel, BridgeGain.PHIDGET_BRIDGE_GAIN_128)
+        self.setEnabled(self.channel, True)
 
-        self.setDataInterval(self.getMinDataInterval())
-        
-        def getVoltage(self):
-            return self.getVoltage()
-        
-
+    def getBridgeValue(self):
+        return self.getBridgeValue(self.channel)
+    
 def main():
 
-    ai = AnalogInput(315317, 3)
+    br = ForceBalanceBridge(407609, 2)
                
     while (True):
         try: 
-            value = ai.getVoltage()
+            value = br.getBridgeValue()
             timestamp = datetime.datetime.now()
             print("value = %f, timestamp = %s\n" % (value, timestamp))
         except PhidgetException as e:

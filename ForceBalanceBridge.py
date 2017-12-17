@@ -34,13 +34,16 @@ class ForceBalanceBridge(VoltageRatioInput):
         self.setBridgeGain(BridgeGain.BRIDGE_GAIN_128)
         self.setBridgeEnabled(True)
 
+        def getBridgeValue(self):
+            return self.getVoltageRatio()
+        
 def main():
 
     br = ForceBalanceBridge(407609, 2)
                
     while (True):
         try: 
-            value = br.getVoltageRatio()
+            value = br.getBridgeValue()
             timestamp = datetime.datetime.now()
             print("value = %f, timestamp = %s\n" % (value, timestamp))
         except PhidgetException as e:
