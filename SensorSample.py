@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
 Created on Wed Nov  1 17:54:40 2017
@@ -9,8 +9,8 @@ import datetime
 
 class SensorSample(object):
 
-    def __init__(self, volts = 0.0, amps = 0.0, aoa = 0.0, rpm = 0,
-                 airspeed = 0.0, hotwire = 0.0, liftRight = 0.0,
+    def __init__(self, volts = 0.0, amps = 0.0, aoa = 0.0, rpm = 0, 
+                 airspeed = 0.0, hotwire = 0.0, liftRight = 0.0, 
                  liftCenter = 0.0, liftLeft = 0.0, drag = 0.0,
                  timestamp = datetime.datetime.now()):
         self.volts = volts
@@ -31,15 +31,15 @@ class SensorSample(object):
                 "drag: %f, timestamp: %s" % \
             (self.volts, self.amps, self.aoa, self.rpm, self.airspeed,
              self.hotwire, self.liftRight, self.liftCenter, self.liftLeft,
-             self.drag, self.timestamp)
-
+             self.drag, self.timestamp)        
+        
 if __name__ == "__main__":
     testSensor = [SensorSample(i / 10.0, i / 10.0, i / 10.0, i, i/ 10.0, \
                                i / 10.0, i / 10.0, i / 10.0, i / 10.0, \
-                               i / 10.0) for i in range(10)]
+                               i / 10.0) for i in xrange(10)]
 
-    for i in range(10):
-        print (testSensor[i])
-
-    print ("done")
+    for i in xrange(10):
+        print testSensor[i];
+ 
+    print "done"
     
