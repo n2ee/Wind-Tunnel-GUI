@@ -40,7 +40,7 @@ class SensorReader(QThread):
         self.dataQ = dataQ
         self.tw = tw
         
-        print "Waiting for phidget boards...\n"
+        print ("Waiting for phidget boards...")
 
         config = TunnelConfig()
         
@@ -82,7 +82,7 @@ class SensorReader(QThread):
             self.hotwire = AnalogInput(serialNo, hotwirePort)
             self.aoa = AnalogInput(serialNo, aoaPort)
         except PhidgetException as e:
-            print "PhidgetException %i: %s" % (e.code, e.details)
+            print ("PhidgetException %i: %s" % (e.code, e.details))
             sys.exit(1)
             
 
@@ -122,7 +122,7 @@ class SensorReader(QThread):
                 currentSample.timestamp = datetime.datetime.now()
                 self.dataQ.put_nowait(currentSample)
             except PhidgetException as e:
-                print "PhidgetException %i: %s" % (e.code, e.details)
+                print ("PhidgetException %i: %s" % (e.code, e.details))
             if (self.tw == None):
                 sampleDelay = 1.0 / 2.0
             else:
@@ -148,7 +148,7 @@ if __name__ == "__main__":
 
     while (True):
         testSample = testQ.get(True)
-        print testSample
+        print (testSample)
         
         
     sys.exit(0)
