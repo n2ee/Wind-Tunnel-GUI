@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 Created on Tue Nov 21 15:16:44 2017
@@ -16,10 +16,10 @@ from Phidget22.Devices.VoltageInput import VoltageInput
 
 
 class AnalogInput(VoltageInput):
-    
+
     def __init__(self, serialNo, channel):
         VoltageInput.__init__(self)
-        
+
         self.setDeviceSerialNumber(serialNo)
         self.setChannel(channel)
 
@@ -30,17 +30,17 @@ class AnalogInput(VoltageInput):
             raise PhidgetException(e.code)
 
         self.setDataInterval(self.getMinDataInterval())
-        
+
         def getVoltage(self):
             return self.getVoltage()
-        
+
 
 def main():
 
     ai = AnalogInput(315317, 3)
-               
+
     while (True):
-        try: 
+        try:
             value = ai.getVoltage()
             timestamp = datetime.datetime.now()
             print("value = %f, timestamp = %s\n" % (value, timestamp))
@@ -51,4 +51,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-    
+

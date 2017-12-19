@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 Created on Wed Nov  1 17:54:40 2017
@@ -9,7 +9,7 @@ import datetime
 
 class ProcessedSample(object):
 
-    def __init__(self, volts = 0.0, amps = 0.0, aoa = 0.0, rpm = 0, 
+    def __init__(self, volts = 0.0, amps = 0.0, aoa = 0.0, rpm = 0,
                  airspeed = 0.0, hotwire = 0.0, lift = 0.0, drag = 0.0,
                  pitchmoment = 0.0, timestamp = datetime.datetime.now()):
         self.volts = volts
@@ -28,14 +28,14 @@ class ProcessedSample(object):
                 "hotwire: %f, lift: %f, drag: %f, pitchMoment: %f, timestamp: %s" % \
             (self.volts, self.amps, self.aoa, self.rpm, self.airspeed,
              self.hotwire, self.lift, self.drag, self.pitchMoment,
-             self.timestamp)        
-        
+             self.timestamp)
+
 if __name__ == "__main__":
     testSample = [ProcessedSample(i / 10.0, i / 10.0, i / 10.0, i, i/ 10.0, \
-                        i / 10.0, i / 10.0, i / 10.0, i / 10.0) for i in xrange(10)]
+                        i / 10.0, i / 10.0, i / 10.0, i / 10.0) for i in range(10)]
 
-    for i in xrange(10):
-        print testSample[i];
- 
-    print "done"
-    
+    for i in range(10):
+        print (testSample[i])
+
+    print ("done")
+

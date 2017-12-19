@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 Created on Sat Nov 18 17:00:51 2017
@@ -9,7 +9,7 @@ Created on Sat Nov 18 17:00:51 2017
 import sys
 import time
 import datetime
-from Queue import Queue
+from queue import Queue
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QThread
 
@@ -18,61 +18,46 @@ from Phidget22.PhidgetException import PhidgetException
 
 from TunnelConfig import TunnelConfig
 from SensorSample import SensorSample
-
-
-usePhidget21 = TunnelConfig().getItem("PhidgetBoards", "usePhidget21")
-
-if (usePhidget21 == None):
-    usePhidget21 = "false"
-    
-if (usePhidget21.tolower() == "true"):
-    from ForceBalanceBridge21 import ForceBalanceBridge
-    from AnalogInput21 import AnalogInput
-
-else:
-    from ForceBalanceBridge import ForceBalanceBridge
-    from AnalogInput import AnalogInput
+from ForceBalanceBridge import ForceBalanceBridge
+from AnalogInput import AnalogInput
 
 class SensorReader(QThread):
-    
+
     def __init__(self, tw, dataQ):
         QThread.__init__(self)
         self.dataQ = dataQ
         self.tw = tw
-        
-        print "Waiting for phidget boards...\n"
 
         config = TunnelConfig()
-        
+
 
         waitDialog = QtWidgets.QDialog()
         ui = Ui_Dialog()
         ui.setupUi(waitDialog)
-        
+
         if (tw == None):
             # ui.buttonBox.clicked.connect(self.close)
             pass
         else:
             ui.buttonBox.clicked.connect(tw.close)
-        
+
         waitDialog.show()
 
-        
         try:
             # Connect up to the phidget boards
             serialNo = int(config.getItem("PhidgetBoards", "liftboardserialno"))
             liftLeftPort = int(config.getItem("PhidgetBoards", "liftleftport"))
             self.liftLeft = ForceBalanceBridge(serialNo, liftLeftPort)
-                    
+
             liftCenterPort = int(config.getItem("PhidgetBoards", "liftcenterport"))
             self.liftCenter = ForceBalanceBridge(serialNo, liftCenterPort)
             liftRightPort = int(config.getItem("PhidgetBoards", "liftrightport"))
             self.liftRight = ForceBalanceBridge(serialNo, liftRightPort)
-            
+
             serialNo = int(config.getItem("PhidgetBoards", "dragboardserialno"))
             dragPort = int(config.getItem("PhidgetBoards", "dragport"))
             self.drag = ForceBalanceBridge(serialNo, dragPort)
-        
+
             serialNo = int(config.getItem("PhidgetBoards", "airspeedserialno"))
             airspeedPort = int(config.getItem("PhidgetBoards", "airspeedport"))
             hotwirePort = int(config.getItem("PhidgetBoards", "hotwireport"))
@@ -82,14 +67,14 @@ class SensorReader(QThread):
             self.hotwire = AnalogInput(serialNo, hotwirePort)
             self.aoa = AnalogInput(serialNo, aoaPort)
         except PhidgetException as e:
-            print "PhidgetException %i: %s" % (e.code, e.details)
+            print ("PhidgetException %i: %s" % (e.code, e.details))
             sys.exit(1)
-            
+
 
         waitDialog.close()
 
     def __del__(self):
-        
+
         # Cleanup all the phidget channels
         self.aoa.close()
         self.hotwire.close()
@@ -98,19 +83,19 @@ class SensorReader(QThread):
         self.liftRight.close()
         self.liftCenter.close()
         self.liftLeft.close()
-        
+
         self.wait()
-     
+
     def run(self):
         currentSample = SensorSample()
-        
+
         while (True):
-            
+
             # Need to add the following items:
-            # currentSample.volts = 
-            # currentSample.amps = 
+            # currentSample.volts =
+            # currentSample.amps =
             # currentSample.rpm =
-            
+
             try:
                 currentSample.airspeed = self.airspeed.getVoltage()
                 currentSample.hotwire = self.hotwire.getVoltage()
@@ -122,16 +107,16 @@ class SensorReader(QThread):
                 currentSample.timestamp = datetime.datetime.now()
                 self.dataQ.put_nowait(currentSample)
             except PhidgetException as e:
-                print "PhidgetException %i: %s" % (e.code, e.details)
+                print ("PhidgetException %i: %s" % (e.code, e.details))
             if (self.tw == None):
                 sampleDelay = 1.0 / 2.0
             else:
                 sampleDelay = (1.0 / self.tw.outSampleRate.value())
-                
+
             time.sleep(sampleDelay)
 
 if __name__ == "__main__":
-    
+
     app = QtWidgets.QApplication.instance()
     if app is None:
         app = QtWidgets.QApplication(sys.argv)
@@ -139,7 +124,7 @@ if __name__ == "__main__":
         print('QApplication instance already exists: %s' % str(app))
 
     # app.exec_()
-    
+
     print('Creating testQ')
 
     testQ = Queue(16384)
@@ -148,7 +133,7 @@ if __name__ == "__main__":
 
     while (True):
         testSample = testQ.get(True)
-        print testSample
-        
-        
+        print (testSample)
+
+
     sys.exit(0)

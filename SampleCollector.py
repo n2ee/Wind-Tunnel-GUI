@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 Created on Sun Nov  5 21:48:24 2017
@@ -59,7 +59,7 @@ class SampleCollector(QThread):
             self.f = open(destFile, "a")
             self.saveSamples = True
         except IOError:
-            print "Could not open: ", destFile
+            print ("Could not open: ", destFile)
             self.saveSamples = False
 
     def setLoadTare(self):
@@ -72,7 +72,7 @@ class SampleCollector(QThread):
         # This method runs as its own thread, catching SensorSamples,
         # updating the GUI, processing data, and tossing it into a file
         # when asked to.
-        
+
         # KalmanFilters still need tuning.
         # liftLeftFilter = KalmanFilter(150e-06, 1.5e-03)
         # liftCenterFilter = KalmanFilter(150e-06, 1.5e-03)
@@ -107,13 +107,12 @@ class SampleCollector(QThread):
             liftRight = latestSample.liftRight - self.rightLoadTare
 
             # Generate filtered values
-            fDrag = dragFilter.get_filtered_value(drag) * self.dragScaling
-            fLiftLeft = liftLeftFilter.get_filtered_value(liftLeft) * \
-                                                    self.liftLeftScaling
-            fLiftCenter = liftCenterFilter.get_filtered_value(liftCenter) * \
-                                                    self.liftCenterScaling
-            fLiftRight = liftRightFilter.get_filtered_value(liftRight) * \
-                                                        self.liftRightScaling
+            fDrag = dragFilter.get_filtered_value(drag)
+            
+            fLiftLeft = liftLeftFilter.get_filtered_value(liftLeft)
+            fLiftCenter = liftCenterFilter.get_filtered_value(liftCenter)
+            fLiftRight = liftRightFilter.get_filtered_value(liftRight)
+            
             airspeed = latestSample.airspeed
             if (airspeed < self.airspeedLowerLimit):
                 # Think of this as a high-pass brickwall filter
@@ -123,14 +122,22 @@ class SampleCollector(QThread):
             aoa = aoa * self.aoaSlope + self.aoaZero
 
             drag = drag * self.dragScaling
+            
             liftLeft = liftLeft * self.liftLeftScaling
             liftCenter = liftCenter * self.liftCenterScaling
             liftRight = liftRight * self.liftRightScaling
+
+            fDrag = fDrag * self.dragScaling
+            
+            fLiftLeft = fLiftLeft * self.liftLeftScaling
+            fLiftCenter = fLiftCenter * self.liftCenterScaling
+            fLiftRight = fLiftRight * self.liftRightScaling
 
             # Crunch the total lift and pitching moments
             totalLift = liftLeft + liftCenter + liftRight
             pitchMoment = (totalLift * 5.63) + \
                             (liftLeft + liftRight) * 1.44
+
             fTotalLift = fLiftLeft + fLiftCenter + fLiftRight
             fPitchMoment = (fTotalLift * 5.63) + \
                             (fLiftLeft + fLiftRight) * 1.44

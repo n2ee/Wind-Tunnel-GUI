@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 Created on Wed Oct 25 17:13:08 2017
@@ -8,7 +8,7 @@ Created on Wed Oct 25 17:13:08 2017
 
 import sys
 
-from Queue import Queue
+from queue import Queue
 from PyQt5 import  QtCore, QtWidgets
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QTableWidgetItem
@@ -52,7 +52,7 @@ class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
     def saveResults(self):
         fname = str(self.inpRunName.text())
         # FIXME - Here would be a good place to sanity-check the file name
-        print "Save Results clicked: %s" % fname
+        print ("Save Results clicked: %s", fname)
         self.sampleCollector.doSave(fname, str(self.inpConfiguration.text()))
 
     def setAOATare(self):
@@ -60,7 +60,7 @@ class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
 
     def startReadingSensors(self):
         sampleRate = self.outSampleRate.value()
-        print "Start sampling at " + str(sampleRate) + " samples/sec"
+        print ("Start sampling at " + str(sampleRate) + " samples/sec")
 
     def setAoa(self, aoa):
         self.outAoaDeg.display(str(aoa))
