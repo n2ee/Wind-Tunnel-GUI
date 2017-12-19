@@ -32,10 +32,10 @@ class ProcessedSample(object):
         
 if __name__ == "__main__":
     testSample = [ProcessedSample(i / 10.0, i / 10.0, i / 10.0, i, i/ 10.0, \
-                        i / 10.0, i / 10.0, i / 10.0, i / 10.0) for i in xrange(10)]
+                        i / 10.0, i / 10.0, i / 10.0, i / 10.0) for i in range(10)]
 
-    for i in xrange(10):
-        print testSample[i];
+    for i in range(10):
+        print (testSample[i])
  
-    print "done"
+    print ("done")
     

@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 Created on Sun Nov 19 16:29:58 2017
@@ -6,7 +6,7 @@ Created on Sun Nov 19 16:29:58 2017
 @author: markm
 """
 
-from ConfigParser import ConfigParser
+from configparser import ConfigParser
 
 class TunnelConfig():
     
@@ -39,8 +39,8 @@ class TunnelConfig():
 if __name__ == "__main__":
     tunnelConfig = TunnelConfig()
     
-    print tunnelConfig.getItem("Version", "version")
-    print tunnelConfig.getItem("PhidgetBoards", "liftboardserialno")
+    print (tunnelConfig.getItem("Version", "version"))
+    print (tunnelConfig.getItem("PhidgetBoards", "liftboardserialno"))
     
         
 

@@ -63,8 +63,7 @@ if __name__ == "__main__":
     import random
     iteration_count = 500
 
-    actual_values = [-0.37727 + j * j * 0.00001 for j in 
-                     xrange(iteration_count)]
+    actual_values = [-0.37727 + j * j * 0.00001 for j in range(iteration_count)]
     noisy_measurement = [random.random() * 2.0 - 1.0 + actual_val 
                          for actual_val in actual_values]
 
@@ -73,12 +72,12 @@ if __name__ == "__main__":
     import numpy
     measurement_standard_deviation = \
         numpy.std([random.random() * 2.0 - 1.0 
-                   for j in xrange(iteration_count)])
+                   for j in range(iteration_count)])
 
     filter = RollingAverageFilter()
     posteri_estimate_graph = []
 
-    for iteration in xrange(1, iteration_count):
+    for iteration in range(1, iteration_count):
         result = filter.get_filtered_value(noisy_measurement[iteration])
         posteri_estimate_graph.append(result)
 
@@ -93,7 +92,7 @@ if __name__ == "__main__":
     pylab.show()
     
     actual_values = [-0.37727 + j * j * 0.00001 for j in 
-                     xrange(iteration_count)]
+                     range(iteration_count)]
     noisy_measurement = [random.random() * 2.0 - 1.0 + actual_val 
                          for actual_val in actual_values]
 
@@ -101,7 +100,7 @@ if __name__ == "__main__":
     # standard deviation
     measurement_standard_deviation = \
         numpy.std([random.random() * 2.0 - 1.0 
-                   for j in xrange(iteration_count)])
+                   for j in range(iteration_count)])
 
     # The smaller this number, the fewer fluctuations, but can also 
     # venture off course...
@@ -111,7 +110,7 @@ if __name__ == "__main__":
                                  estimated_measurement_variance)
     posteri_estimate_graph = []
 
-    for iteration in xrange(1, iteration_count):
+    for iteration in range(1, iteration_count):
         result = kalman_filter.get_filtered_value(noisy_measurement[iteration])
         posteri_estimate_graph.append(result)
 

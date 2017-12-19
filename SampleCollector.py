@@ -59,7 +59,7 @@ class SampleCollector(QThread):
             self.f = open(destFile, "a")
             self.saveSamples = True
         except IOError:
-            print "Could not open: ", destFile
+            print ("Could not open: ", destFile)
             self.saveSamples = False
 
     def setLoadTare(self):

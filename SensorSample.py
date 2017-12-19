@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 Created on Wed Nov  1 17:54:40 2017
@@ -36,10 +36,10 @@ class SensorSample(object):
 if __name__ == "__main__":
     testSensor = [SensorSample(i / 10.0, i / 10.0, i / 10.0, i, i/ 10.0, \
                                i / 10.0, i / 10.0, i / 10.0, i / 10.0, \
-                               i / 10.0) for i in xrange(10)]
+                               i / 10.0) for i in range(10)]
 
-    for i in xrange(10):
-        print testSensor[i];
+    for i in range(10):
+        print (testSensor[i])
  
-    print "done"
+    print ("done")
     

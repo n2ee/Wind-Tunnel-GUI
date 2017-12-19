@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 Created on Sat Nov 18 17:00:51 2017
@@ -9,7 +9,7 @@ Created on Sat Nov 18 17:00:51 2017
 import sys
 import time
 import datetime
-from Queue import Queue
+from queue import Queue
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QThread
 
@@ -19,19 +19,8 @@ from Phidget22.PhidgetException import PhidgetException
 from TunnelConfig import TunnelConfig
 from SensorSample import SensorSample
 
-
-usePhidget21 = TunnelConfig().getItem("PhidgetBoards", "usePhidget21")
-
-if (usePhidget21 == None):
-    usePhidget21 = "false"
-    
-if (usePhidget21.tolower() == "true"):
-    from ForceBalanceBridge21 import ForceBalanceBridge
-    from AnalogInput21 import AnalogInput
-
-else:
-    from ForceBalanceBridge import ForceBalanceBridge
-    from AnalogInput import AnalogInput
+from ForceBalanceBridge import ForceBalanceBridge
+from AnalogInput import AnalogInput
 
 class SensorReader(QThread):
     

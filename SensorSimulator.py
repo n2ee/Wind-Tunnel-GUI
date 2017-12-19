@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 Created on Sun Nov  5 09:19:20 2017
@@ -11,7 +11,7 @@ import sys
 import math
 import time
 import datetime
-from Queue import Queue
+from queue import Queue
 from PyQt5.QtCore import QThread
 
 from SensorSample import SensorSample
@@ -61,7 +61,6 @@ if __name__ == "__main__":
     
     while (True):
         testSample = testQ.get(True)
-        print testSample
-        
+        print (testSample)
         
     sys.exit(0)
