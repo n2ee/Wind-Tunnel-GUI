@@ -11,6 +11,8 @@ samples to the display UI and/or writes to a file.
 
 """
 import os
+from math import sqrt
+
 from PyQt5 import QtCore
 from PyQt5.QtCore import QThread
 
@@ -80,14 +82,13 @@ class SampleCollector(QThread):
         # when asked to.
         
         # KalmanFilters still need tuning.
-        # liftLeftFilter = KalmanFilter(150e-06, 1.5e-03)
-        # liftCenterFilter = KalmanFilter(150e-06, 1.5e-03)
-        # liftRightFilter = KalmanFilter(150e-06, 1.5e-03)
+        # totalLiftFilter = KalmanFilter(150e-06, 1.5e-03)
+        # pitchMomentFilter = KalmanFilter(150e-06, 1.5e-03)
         # dragFilter = KalmanFilter(150e-06, 1.5e-03)
-        liftLeftFilter = RollingAverageFilter(30)
-        liftCenterFilter = RollingAverageFilter(30)
-        liftRightFilter = RollingAverageFilter(30)
-        dragFilter = RollingAverageFilter(30)
+        
+        totalLiftFilter = RollingAverageFilter()
+        pitchMomentFilter = RollingAverageFilter()
+        dragFilter = RollingAverageFilter()
     
         while (True):
             latestSample = self.dataQ.get(True)
@@ -111,14 +112,22 @@ class SampleCollector(QThread):
             liftCenter = latestSample.liftCenter - self.centerLoadTare
             liftRight = latestSample.liftRight - self.rightLoadTare
 
+            # Scale the lift values 
+            scaledLiftLeft = liftLeft * self.liftLeftScaling
+            scaledLiftCenter = liftCenter * self.liftCenterScaling
+            scaledLiftRight = liftRight * self.liftRightScaling
+            
+            # Crunch the total lift and pitching moments
+            totalLift = scaledLiftLeft + scaledLiftCenter + scaledLiftRight
+            pitchMoment = (totalLift * 5.63) + \
+                            (scaledLiftLeft + scaledLiftRight) * 1.44
+
             # Generate filtered values
-            fDrag = dragFilter.get_filtered_value(drag) * self.dragScaling
-            fLiftLeft = liftLeftFilter.get_filtered_value(liftLeft) * \
-                                                    self.liftLeftScaling
-            fLiftCenter = liftCenterFilter.get_filtered_value(liftCenter) * \
-                                                    self.liftCenterScaling
-            fLiftRight = liftRightFilter.get_filtered_value(liftRight) * \
-                                                        self.liftRightScaling
+            fDrag = dragFilter.get_filtered_value(drag) * self.dragScaling          
+            fTotalLift = totalLiftFilter.get_filtered_value(totalLift)
+            fPitchMoment = pitchMomentFilter.get_filtered_value(pitchMoment)
+            fTotalLiftStdDev = sqrt(totalLiftFilter.get_variance())
+            
             airspeed = latestSample.airspeed
             if (airspeed < self.airspeedLowerLimit):
                 # Think of this as a high-pass brickwall filter
@@ -126,24 +135,12 @@ class SampleCollector(QThread):
 
             # Scale to taste
             aoa = aoa * self.aoaSlope + self.aoaZero
-
             drag = drag * self.dragScaling
-            liftLeft = liftLeft * self.liftLeftScaling
-            liftCenter = liftCenter * self.liftCenterScaling
-            liftRight = liftRight * self.liftRightScaling
-
-            # Crunch the total lift and pitching moments
-            totalLift = liftLeft + liftCenter + liftRight
-            pitchMoment = (totalLift * 5.63) + \
-                            (liftLeft + liftRight) * 1.44
-            fTotalLift = fLiftLeft + fLiftCenter + fLiftRight
-            fPitchMoment = (fTotalLift * 5.63) + \
-                            (fLiftLeft + fLiftRight) * 1.44
-
+      
             self.tunnelWindow.setAoa(aoa)
             self.tunnelWindow.tblLiftDragMoment.setUpdatesEnabled(False)
             self.tunnelWindow.setAirspeed(airspeed)
-            self.tunnelWindow.setLift(totalLift, fTotalLift)
+            self.tunnelWindow.setLift(fTotalLift, fTotalLiftStdDev)
             self.tunnelWindow.setDrag(drag, fDrag)
             self.tunnelWindow.setMoment(pitchMoment, fPitchMoment)
             self.tunnelWindow.tblLiftDragMoment.setUpdatesEnabled(True)

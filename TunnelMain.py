@@ -69,7 +69,7 @@ class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
         self.outSpeedMPH.display(str(speed))
         self.outSpeedFps.display(str(speed * 5280 / (60 * 60)))
 
-    def setLift(self, lift, fLift):
+    def setLift(self, lift, stddev):
         itemKg = QTableWidgetItem()
         itemKg.setData(Qt.DisplayRole, lift)
         self.tblLiftDragMoment.setItem(0, 0, itemKg)
@@ -77,7 +77,7 @@ class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
         itemLb.setData(Qt.DisplayRole, (lift * 2.2046))
         self.tblLiftDragMoment.setItem(0, 1, itemLb)
         fItemKg = QTableWidgetItem()
-        fItemKg.setData(Qt.DisplayRole, fLift)
+        fItemKg.setData(Qt.DisplayRole, stddev)
         self.tblLiftDragMoment.setItem(0, 2, fItemKg)
 
     def setDrag(self, drag, fDrag):
