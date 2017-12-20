@@ -34,18 +34,19 @@ class ForceBalanceBridge(VoltageRatioInput):
         self.setBridgeGain(BridgeGain.BRIDGE_GAIN_128)
         self.setBridgeEnabled(True)
 
-        def getBridgeValue(self):
-            return self.getVoltageRatio()
-        
 def main():
 
-    br = ForceBalanceBridge(407609, 2)
+    brLeft = ForceBalanceBridge(407635, 0)
+    brCenter = ForceBalanceBridge(407635, 1)
+    brRight = ForceBalanceBridge(407635, 2)
                
     while (True):
         try: 
-            value = br.getBridgeValue()
+            lValue = brLeft.getSensorValue()
+            cValue = brCenter.getSensorValue()
+            rValue = brRight.getSensorValue()
             timestamp = datetime.datetime.now()
-            print("value = %f, timestamp = %s\n" % (value, timestamp))
+            print("left value = %f, center value = %f, right value = %f, timestamp = %s\n" % (lValue, cValue, rValue, timestamp))
         except PhidgetException as e:
             print("Exception on getVoltageRatio %i: %s" % (e.code, e.details))
 
