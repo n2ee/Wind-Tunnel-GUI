@@ -67,9 +67,7 @@ class RollingAverageFilter(object):
         for i in range(0, self.N):
             sum2 += (self.oldX[i] - self.mean) * (self.oldX[i] - self.mean)
             
-        self.variance = sum2 / (self.N - 1)
-        
-
+        self.variance = sum2 / (self.N - 1)  
         return self.variance
 
 if __name__ == "__main__":
