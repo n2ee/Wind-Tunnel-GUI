@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 Created on Sun Nov  5 21:48:24 2017
@@ -48,6 +48,7 @@ class SampleCollector(QThread):
         self.aoaZero = float(config.getItem("AoA", "zero"))
         self.airspeedLowerLimit = float(config.getItem("Airspeed",
                                                        "lowerlimit"))
+        self.aoaTare = self.aoaZero
 
     def __del__(self):
         self.wait()
@@ -68,6 +69,11 @@ class SampleCollector(QThread):
     def setAoATare(self):
         self.updateAoATare = True
 
+    def dumpData(self, airspeed, aoa, drag, liftLeft, liftCenter, liftRight, totalLift):
+        print("as=%f, aoa=%f, drag=%f, LL=%f, LC=%f, LR=%f, TL=%f" % (airspeed,
+              aoa, drag, liftLeft, liftCenter, liftRight, totalLift))
+    
+              
     def run(self):
         # This method runs as its own thread, catching SensorSamples,
         # updating the GUI, processing data, and tossing it into a file
@@ -78,12 +84,11 @@ class SampleCollector(QThread):
         # liftCenterFilter = KalmanFilter(150e-06, 1.5e-03)
         # liftRightFilter = KalmanFilter(150e-06, 1.5e-03)
         # dragFilter = KalmanFilter(150e-06, 1.5e-03)
-        liftLeftFilter = RollingAverageFilter()
-        liftCenterFilter = RollingAverageFilter()
-        liftRightFilter = RollingAverageFilter()
-        dragFilter = RollingAverageFilter()
-
-
+        liftLeftFilter = RollingAverageFilter(30)
+        liftCenterFilter = RollingAverageFilter(30)
+        liftRightFilter = RollingAverageFilter(30)
+        dragFilter = RollingAverageFilter(30)
+    
         while (True):
             latestSample = self.dataQ.get(True)
 
@@ -145,7 +150,10 @@ class SampleCollector(QThread):
 
             self.tunnelWindow.updateGraphs(fTotalLift, fDrag, fPitchMoment,
                                            airspeed)
-
+            
+            self.dumpData(latestSample.airspeed, aoa, drag, liftLeft, liftCenter,
+                          liftRight, totalLift)
+            
             if (self.saveSamples):
                 self.saveSamples = False
                 processedSample = ProcessedSample(latestSample.volts,
