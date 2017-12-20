@@ -101,9 +101,9 @@ class SensorReader(QThread):
             # currentSample.rpm =
             
             try:
-                currentSample.airspeed = self.airspeed.getVoltage()
-                currentSample.hotwire = self.hotwire.getVoltage()
-                currentSample.aoa = self.aoa.getVoltage()
+                currentSample.airspeed = self.airspeed.getScaledValue(1000)
+                currentSample.hotwire = self.hotwire.getScaledValue(1000)
+                currentSample.aoa = self.aoa.getScaledValue(1000)
                 currentSample.liftLeft = self.liftLeft.getVoltageRatio()
                 currentSample.liftCenter = self.liftCenter.getVoltageRatio()
                 currentSample.liftRight = self.liftRight.getVoltageRatio()

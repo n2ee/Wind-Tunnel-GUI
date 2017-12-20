@@ -30,20 +30,26 @@ class AnalogInput(VoltageInput):
             raise PhidgetException(e.code)
 
         self.setDataInterval(self.getMinDataInterval())
+        self.minV = self.getMinVoltage()
+        self.maxV = self.getMaxVoltage()
+        self.rangeV = self.maxV - self.minV
         
-        def getVoltage(self):
-            return self.getVoltage()
+    def getScaledValue(self, scalingValue):
+        return int(((self.getVoltage() - self.minV) * scalingValue) / self.rangeV)
+    
         
-
 def main():
 
     ai = AnalogInput(315317, 3)
-               
+    
+    print("minV = %f, maxV = %f, rangeV = %f" % (ai.minV, ai.maxV, ai.rangeV))
+    
     while (True):
         try: 
-            value = ai.getVoltage()
+            volts = ai.getVoltage()
+            value = ai.getScaledValue(1000)
             timestamp = datetime.datetime.now()
-            print("value = %f, timestamp = %s\n" % (value, timestamp))
+            print("volts = %f, value = %d, timestamp = %s\n" % (volts, value, timestamp))
         except PhidgetException as e:
             print("Exception on getVoltageRatio %i: %s" % (e.code, e.details))
 
