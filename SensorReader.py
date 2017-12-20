@@ -18,7 +18,6 @@ from Phidget22.PhidgetException import PhidgetException
 
 from TunnelConfig import TunnelConfig
 from SensorSample import SensorSample
-
 from ForceBalanceBridge import ForceBalanceBridge
 from AnalogInput import AnalogInput
 
@@ -29,7 +28,7 @@ class SensorReader(QThread):
         self.dataQ = dataQ
         self.tw = tw
         
-        print ("Waiting for phidget boards...")
+        print ("Waiting for phidget boards...\n")
 
         config = TunnelConfig()
         
@@ -55,6 +54,7 @@ class SensorReader(QThread):
                     
             liftCenterPort = int(config.getItem("PhidgetBoards", "liftcenterport"))
             self.liftCenter = ForceBalanceBridge(serialNo, liftCenterPort)
+            
             liftRightPort = int(config.getItem("PhidgetBoards", "liftrightport"))
             self.liftRight = ForceBalanceBridge(serialNo, liftRightPort)
             
@@ -104,10 +104,10 @@ class SensorReader(QThread):
                 currentSample.airspeed = self.airspeed.getVoltage()
                 currentSample.hotwire = self.hotwire.getVoltage()
                 currentSample.aoa = self.aoa.getVoltage()
-                currentSample.liftLeft = self.liftLeft.getBridgeValue()
-                currentSample.liftCenter = self.liftCenter.getBridgeValue()
-                currentSample.liftRight = self.liftRight.getBridgeValue()
-                currentSample.drag = self.drag.getBridgeValue()
+                currentSample.liftLeft = self.liftLeft.getVoltageRatio()
+                currentSample.liftCenter = self.liftCenter.getVoltageRatio()
+                currentSample.liftRight = self.liftRight.getVoltageRatio()
+                currentSample.drag = self.drag.getVoltageRatio()
                 currentSample.timestamp = datetime.datetime.now()
                 self.dataQ.put_nowait(currentSample)
             except PhidgetException as e:
