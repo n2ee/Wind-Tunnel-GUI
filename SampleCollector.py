@@ -32,7 +32,7 @@ class SampleCollector(QThread):
     updateLoadTare = False
     aoaTare = 0.0
     updateAoATare = False
-
+    
     def __init__(self, tw, dQ):
         QThread.__init__(self)
         self.dataQ = dQ
@@ -50,6 +50,10 @@ class SampleCollector(QThread):
         self.aoaZero = float(config.getItem("AoA", "zero"))
         self.airspeedLowerLimit = float(config.getItem("Airspeed",
                                                        "lowerlimit"))
+
+        self.airspeedZero = float(config.getItem("Airspeed", "zero"))
+        self.airspeedSlope = float(config.getItem("Airspeed", "slope"))
+                                  
         self.aoaTare = self.aoaZero
 
     def __del__(self):
@@ -104,7 +108,7 @@ class SampleCollector(QThread):
                 self.aoaTare = latestSample.aoa
 
             # Get the AoA
-            aoa = latestSample.aoa - self.aoaTare
+            aoa = latestSample.aoa
 
             # Get the latest lift & drag, adjust for tare
             drag = latestSample.drag
@@ -127,29 +131,33 @@ class SampleCollector(QThread):
             fTotalLift = totalLiftFilter.get_filtered_value(totalLift)
             fPitchMoment = pitchMomentFilter.get_filtered_value(pitchMoment)
             fTotalLiftStdDev = sqrt(totalLiftFilter.get_variance())
+            fDragStdDev = sqrt(dragFilter.get_variance())
+            fPitchMomentStdDev = sqrt(pitchMomentFilter.get_variance())
             
             airspeed = latestSample.airspeed
-            if (airspeed < self.airspeedLowerLimit):
-                # Think of this as a high-pass brickwall filter
-                airspeed = 0.0
 
             # Scale to taste
             aoa = aoa * self.aoaSlope + self.aoaZero
             drag = drag * self.dragScaling
-      
+            airspeed = airspeed * self.airspeedSlope + self.airspeedZero
+            airspeed = sqrt((airspeed * 144.0 * 2.0) / (0.952 * 0.002378)) * 0.682
+            if (airspeed < self.airspeedLowerLimit):
+                # Think of this as a high-pass brickwall filter
+                airspeed = 0.0
+                                                          
             self.tunnelWindow.setAoa(aoa)
             self.tunnelWindow.tblLiftDragMoment.setUpdatesEnabled(False)
             self.tunnelWindow.setAirspeed(airspeed)
             self.tunnelWindow.setLift(fTotalLift, fTotalLiftStdDev)
-            self.tunnelWindow.setDrag(drag, fDrag)
-            self.tunnelWindow.setMoment(pitchMoment, fPitchMoment)
+            self.tunnelWindow.setDrag(fDrag, fDragStdDev)
+            self.tunnelWindow.setMoment(fPitchMoment, fPitchMomentStdDev)
             self.tunnelWindow.tblLiftDragMoment.setUpdatesEnabled(True)
 
             self.tunnelWindow.updateGraphs(fTotalLift, fDrag, fPitchMoment,
                                            airspeed)
             
-            self.dumpData(latestSample.airspeed, aoa, drag, liftLeft, liftCenter,
-                          liftRight, totalLift)
+            self.dumpData(airspeed, aoa, drag, scaledLiftLeft,
+                          scaledLiftCenter, scaledLiftRight, totalLift)
             
             if (self.saveSamples):
                 self.saveSamples = False
