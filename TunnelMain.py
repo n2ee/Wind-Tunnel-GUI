@@ -63,43 +63,51 @@ class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
         print ("Start sampling at " + str(sampleRate) + " samples/sec")
 
     def setAoa(self, aoa):
+        aoa = float('%.1f' % aoa)
         self.outAoaDeg.display(str(aoa))
 
     def setAirspeed(self, speed):
+        speed = float('%.1f' % speed)
         self.outSpeedMPH.display(str(speed))
         self.outSpeedFps.display(str(speed * 5280 / (60 * 60)))
 
     def setLift(self, lift, stddev):
+        lift = float('%.3f' % lift)
+        stddev = float('%.3f' % stddev)
         itemKg = QTableWidgetItem()
         itemKg.setData(Qt.DisplayRole, lift)
         self.tblLiftDragMoment.setItem(0, 0, itemKg)
         itemLb = QTableWidgetItem()
-        itemLb.setData(Qt.DisplayRole, (lift * 2.2046))
+        itemLb.setData(Qt.DisplayRole, float('%.3f' % (lift * 2.2046)))
         self.tblLiftDragMoment.setItem(0, 1, itemLb)
         fItemKg = QTableWidgetItem()
         fItemKg.setData(Qt.DisplayRole, stddev)
         self.tblLiftDragMoment.setItem(0, 2, fItemKg)
 
-    def setDrag(self, drag, fDrag):
+    def setDrag(self, drag, stddev):
+        drag = float('%.3f' % drag)
+        stddev = float('%.3f' % stddev)
         itemKg = QTableWidgetItem()
         itemKg.setData(Qt.DisplayRole, drag)
         self.tblLiftDragMoment.setItem(1, 0, itemKg)
         itemLb = QTableWidgetItem()
-        itemLb.setData(Qt.DisplayRole, (drag * 2.2046))
+        itemLb.setData(Qt.DisplayRole, float('%.3f' % (drag * 2.2046)))
         self.tblLiftDragMoment.setItem(1, 1, itemLb)
         fItemKg = QTableWidgetItem()
-        fItemKg.setData(Qt.DisplayRole, fDrag)
+        fItemKg.setData(Qt.DisplayRole, stddev)
         self.tblLiftDragMoment.setItem(1, 2, fItemKg)
 
-    def setMoment(self, moment, fMoment):
+    def setMoment(self, moment, stddev):
+        moment = float('%.3f' % moment)
+        stddev = float('%.3f' % stddev)
         itemKgM = QTableWidgetItem()
         itemKgM.setData(Qt.DisplayRole, moment)
         self.tblLiftDragMoment.setItem(2, 0, itemKgM)
         itemLbFt = QTableWidgetItem()
-        itemLbFt.setData(Qt.DisplayRole, (moment * 8.8507))
+        itemLbFt.setData(Qt.DisplayRole, float('%.3f' % (moment * 8.8507)))
         self.tblLiftDragMoment.setItem(2, 1, itemLbFt)
         fItemKgM = QTableWidgetItem()
-        fItemKgM.setData(Qt.DisplayRole, fMoment)
+        fItemKgM.setData(Qt.DisplayRole, stddev)
         self.tblLiftDragMoment.setItem(2, 2, fItemKgM)
 
     def startSensorReader(self, tunnelWindow, tunnelDataQ):
