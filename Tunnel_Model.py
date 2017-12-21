@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'Tunnel_Model.ui'
 #
-# Created by: PyQt5 UI code generator 5.9
+# Created by: PyQt5 UI code generator 5.9.2
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -15,14 +15,14 @@ class Ui_MainWindow(object):
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.btnLoadTare = QtWidgets.QPushButton(self.centralwidget)
-        self.btnLoadTare.setGeometry(QtCore.QRect(20, 320, 113, 32))
-        self.btnLoadTare.setToolTipDuration(4)
+        self.btnLoadTare.setGeometry(QtCore.QRect(90, 320, 113, 32))
+        self.btnLoadTare.setProperty("toolTipDuration", 4)
         self.btnLoadTare.setObjectName("btnLoadTare")
         self.inpRunName = QtWidgets.QLineEdit(self.centralwidget)
         self.inpRunName.setGeometry(QtCore.QRect(110, 20, 261, 21))
         self.inpRunName.setObjectName("inpRunName")
         self.btnSaveResults = QtWidgets.QPushButton(self.centralwidget)
-        self.btnSaveResults.setGeometry(QtCore.QRect(310, 320, 113, 32))
+        self.btnSaveResults.setGeometry(QtCore.QRect(280, 320, 113, 32))
         self.btnSaveResults.setObjectName("btnSaveResults")
         self.lblRunName = QtWidgets.QLabel(self.centralwidget)
         self.lblRunName.setGeometry(QtCore.QRect(30, 20, 71, 20))
@@ -82,9 +82,6 @@ class Ui_MainWindow(object):
         self.lblKgStd.setGeometry(QtCore.QRect(310, 270, 61, 16))
         self.lblKgStd.setAlignment(QtCore.Qt.AlignCenter)
         self.lblKgStd.setObjectName("lblKgStd")
-        self.btnSetAOATare = QtWidgets.QPushButton(self.centralwidget)
-        self.btnSetAOATare.setGeometry(QtCore.QRect(170, 320, 113, 32))
-        self.btnSetAOATare.setObjectName("btnSetAOATare")
         self.lblSampleRate = QtWidgets.QLabel(self.centralwidget)
         self.lblSampleRate.setGeometry(QtCore.QRect(390, 30, 81, 20))
         self.lblSampleRate.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
@@ -143,19 +140,8 @@ class Ui_MainWindow(object):
         self.lblMoment.setText(_translate("MainWindow", "Moment:"))
         self.lblKg.setText(_translate("MainWindow", "Kg"))
         self.lblLb.setText(_translate("MainWindow", "lb"))
-        self.lblKgStd.setText(_translate("MainWindow", "Kg (std)"))
-        self.btnSetAOATare.setText(_translate("MainWindow", "Set AOA Tare"))
+        self.lblKgStd.setText(_translate("MainWindow", "sd Kg"))
         self.lblSampleRate.setText(_translate("MainWindow", "Sample Rate:"))
         self.lblAoA.setText(_translate("MainWindow", "AoA:"))
         self.lblDeg.setText(_translate("MainWindow", "Deg"))
-
-
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
-    sys.exit(app.exec_())
 

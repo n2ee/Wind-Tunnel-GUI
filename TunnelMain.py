@@ -34,7 +34,6 @@ class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
         # Connect buttons to their corresponding functions
         self.btnLoadTare.clicked.connect(self.loadTare)
         self.btnSaveResults.clicked.connect(self.saveResults)
-        self.btnSetAOATare.clicked.connect(self.setAOATare)
 
         self.sensorRdr = None
         self.sampleCollector = None
@@ -54,9 +53,6 @@ class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
         # FIXME - Here would be a good place to sanity-check the file name
         print ("Save Results clicked: %s" % fname)
         self.sampleCollector.doSave(fname, str(self.inpConfiguration.text()))
-
-    def setAOATare(self):
-        self.sampleCollector.setAoATare()
 
     def startReadingSensors(self):
         sampleRate = self.outSampleRate.value()

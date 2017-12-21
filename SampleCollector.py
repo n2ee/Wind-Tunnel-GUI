@@ -30,8 +30,6 @@ class SampleCollector(QThread):
     centerLoadTare = 0.0
     rightLoadTare = 0.0
     updateLoadTare = False
-    aoaTare = 0.0
-    updateAoATare = False
     
     def __init__(self, tw, dQ):
         QThread.__init__(self)
@@ -54,8 +52,6 @@ class SampleCollector(QThread):
         self.airspeedZero = float(config.getItem("Airspeed", "zero"))
         self.airspeedSlope = float(config.getItem("Airspeed", "slope"))
                                   
-        self.aoaTare = self.aoaZero
-
     def __del__(self):
         self.wait()
 
@@ -71,9 +67,6 @@ class SampleCollector(QThread):
 
     def setLoadTare(self):
         self.updateLoadTare = True
-
-    def setAoATare(self):
-        self.updateAoATare = True
 
     def dumpData(self, airspeed, aoa, drag, liftLeft, liftCenter, liftRight, totalLift):
         print("as=%f, aoa=%f, drag=%f, LL=%f, LC=%f, LR=%f, TL=%f" % (airspeed,
@@ -102,10 +95,6 @@ class SampleCollector(QThread):
                 self.leftLoadTare = latestSample.liftLeft
                 self.centerLoadTare = latestSample.liftCenter
                 self.rightLoadTare = latestSample.liftRight
-
-            if (self.updateAoATare):
-                self.updateAoATare = False
-                self.aoaTare = latestSample.aoa
 
             # Get the AoA
             aoa = latestSample.aoa

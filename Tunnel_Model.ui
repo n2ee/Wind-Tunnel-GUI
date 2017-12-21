@@ -17,17 +17,17 @@
    <widget class="QPushButton" name="btnLoadTare">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>90</x>
       <y>320</y>
       <width>113</width>
       <height>32</height>
      </rect>
     </property>
-    <property name="toolTipDuration">
-     <number>4</number>
-    </property>
     <property name="text">
      <string>Set Load Tare</string>
+    </property>
+    <property name="toolTipDuration" stdset="0">
+     <number>4</number>
     </property>
    </widget>
    <widget class="QLineEdit" name="inpRunName">
@@ -43,7 +43,7 @@
    <widget class="QPushButton" name="btnSaveResults">
     <property name="geometry">
      <rect>
-      <x>310</x>
+      <x>280</x>
       <y>320</y>
       <width>113</width>
       <height>32</height>
@@ -274,23 +274,10 @@
      </rect>
     </property>
     <property name="text">
-     <string>Kg (std)</string>
+     <string>sd Kg</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="btnSetAOATare">
-    <property name="geometry">
-     <rect>
-      <x>170</x>
-      <y>320</y>
-      <width>113</width>
-      <height>32</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Set AOA Tare</string>
     </property>
    </widget>
    <widget class="QLabel" name="lblSampleRate">
