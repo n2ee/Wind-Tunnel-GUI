@@ -33,16 +33,17 @@ class SensorSimulator(QThread):
         
         while (True):
             theta = (theta + 1) % 360 
-
+            theta45Lead = (45 + theta) % 360
+            theta45Lag = (theta + 315) % 360
             dummySample.volts = math.cos(math.radians(theta))
             dummySample.amps = math.sin(math.radians(theta)) 
-            dummySample.aoa = theta / 8
+            dummySample.aoa = (theta /45) - 4
             dummySample.rpm = 10 * theta / 2
-            dummySample.airspeed = theta / 3
-            dummySample.hotwire = theta / 4
-            dummySample.liftLeft = theta / 5
-            dummySample.liftCenter = theta / 6
-            dummySample.liftRight = theta / 7
+            dummySample.airspeed = 500.0 + int(math.cos(math.radians(theta / 3)) * 500)
+            dummySample.hotwire = 500.0 + int(math.cos(math.radians(theta / 3)) * 500)
+            dummySample.liftLeft = math.cos(math.radians(theta45Lead))
+            dummySample.liftCenter = math.cos(math.radians(theta))
+            dummySample.liftRight = math.cos(math.radians(theta45Lag))
             dummySample.drag = theta / 8
             dummySample.timestamp = datetime.datetime.now()
             self.dataQ.put_nowait(dummySample)
