@@ -29,6 +29,7 @@ class SampleCollector(QThread):
     leftLoadTare = 0.0
     centerLoadTare = 0.0
     rightLoadTare = 0.0
+    dragTare = 0.0
     updateLoadTare = False
     
     def __init__(self, tw, dQ):
@@ -95,12 +96,13 @@ class SampleCollector(QThread):
                 self.leftLoadTare = latestSample.liftLeft
                 self.centerLoadTare = latestSample.liftCenter
                 self.rightLoadTare = latestSample.liftRight
+                self.dragTare = latestSample.drag
 
             # Get the AoA
             aoa = latestSample.aoa
 
             # Get the latest lift & drag, adjust for tare
-            drag = latestSample.drag
+            drag = latestSample.drag - self.dragTare
             liftLeft = latestSample.liftLeft - self.leftLoadTare
             liftCenter = latestSample.liftCenter - self.centerLoadTare
             liftRight = latestSample.liftRight - self.rightLoadTare
