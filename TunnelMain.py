@@ -44,7 +44,6 @@ class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
         self.pitchMomentGraph = None
         self.airspeedGraph = None
 
-
     def loadTare(self):
         self.sampleCollector.setLoadTare()
 

@@ -12,7 +12,16 @@ class TunnelConfig():
     
     def __init__(self):
         self.config = ConfigParser()
-        self.config.read("config.ini")
+        """
+        Files are read in order listed below; if the later file has settings 
+        that conflict with the earlier file, then those of the later file take
+        precedence.
+        
+        The files don't have to exitst, however, the the calling code may 
+        not deal with some of the missing settings gracefully.
+        """
+        
+        self.config.read(("config.ini", "configsim.ini"))
         
     def getSectionMap(self, section):
         dict1 = {}
@@ -41,6 +50,5 @@ if __name__ == "__main__":
     
     print (tunnelConfig.getItem("Version", "version"))
     print (tunnelConfig.getItem("PhidgetBoards", "liftboardserialno"))
+    print (tunnelConfig.getItem("General", "UseSimulatedData"))
     
-        
-
