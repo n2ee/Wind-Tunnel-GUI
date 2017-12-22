@@ -107,11 +107,13 @@ class SampleCollector(QThread):
             liftCenter = latestSample.liftCenter - self.centerLoadTare
             liftRight = latestSample.liftRight - self.rightLoadTare
 
-            # Scale the lift values 
+            # Scale to taste
             scaledLiftLeft = liftLeft * self.liftLeftScaling
             scaledLiftCenter = liftCenter * self.liftCenterScaling
             scaledLiftRight = liftRight * self.liftRightScaling
-            
+            aoa = aoa * self.aoaSlope + self.aoaZero
+            drag = drag * self.dragScaling
+
             # Crunch the total lift and pitching moments
             totalLift = scaledLiftLeft + scaledLiftCenter + scaledLiftRight
             pitchMoment = (totalLift * 5.63) + \
@@ -125,11 +127,8 @@ class SampleCollector(QThread):
             fDragStdDev = sqrt(dragFilter.get_variance())
             fPitchMomentStdDev = sqrt(pitchMomentFilter.get_variance())
             
+            # Compute actual airspeed
             airspeed = latestSample.airspeed
-
-            # Scale to taste
-            aoa = aoa * self.aoaSlope + self.aoaZero
-            drag = drag * self.dragScaling
             airspeed = airspeed * self.airspeedSlope + self.airspeedZero
             airspeed = sqrt((airspeed * 144.0 * 2.0) / (0.952 * 0.002378)) * 0.682
             if (airspeed < self.airspeedLowerLimit):
@@ -156,8 +155,7 @@ class SampleCollector(QThread):
                                                   latestSample.amps,
                                                   latestSample.aoa,
                                                   latestSample.rpm,
-                                                  latestSample.airspeed,
-                                                  latestSample.hotwire,
+                                                  airspeed,
                                                   fTotalLift,
                                                   fDrag,
                                                   fPitchMoment,
