@@ -105,6 +105,10 @@ class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
         fItemKgM.setData(Qt.DisplayRole, stddev)
         self.tblLiftDragMoment.setItem(2, 2, fItemKgM)
 
+    def setPower(self, power):
+        power = float('%.1f' % power)
+        self.outPower.display(str(power))
+
     def startSensorReader(self, tunnelWindow, tunnelDataQ):
         useSimulatedData = self.config.getItem("General",
                                                "UseSimulatedData")

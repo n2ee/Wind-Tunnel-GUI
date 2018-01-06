@@ -47,6 +47,16 @@ class SampleCollector(QThread):
 
         self.aoaSlope = float(config.getItem("AoA", "slope"))
         self.aoaZero = float(config.getItem("AoA", "zero"))
+
+        self.voltsSlope = float(config.getItem("Volts", "slope"))
+        self.voltsZero = float(config.getItem("Volts", "zero"))
+
+        self.ampsSlope = float(config.getItem("Amps", "slope"))
+        self.ampsZero = float(config.getItem("Amps", "zero"))
+
+        self.aoaSlope = float(config.getItem("AoA", "slope"))
+        self.aoaZero = float(config.getItem("AoA", "zero"))
+
         self.airspeedLowerLimit = float(config.getItem("Airspeed",
                                                        "lowerlimit"))
 
@@ -69,11 +79,12 @@ class SampleCollector(QThread):
     def setLoadTare(self):
         self.updateLoadTare = True
 
-    def dumpData(self, airspeed, aoa, drag, liftLeft, liftCenter, liftRight, totalLift):
-        print("as=%f, aoa=%f, drag=%f, LL=%f, LC=%f, LR=%f, TL=%f" % (airspeed,
-              aoa, drag, liftLeft, liftCenter, liftRight, totalLift))
+    def dumpData(self, airspeed, aoa, drag, liftLeft, liftCenter, liftRight, 
+                 totalLift, volts, amps):
+        print("V=%f, A=%f, as=%f, aoa=%f, drag=%f, LL=%f, LC=%f, LR=%f, TL=%f" \
+              % (volts, amps, airspeed, aoa, drag,
+                 liftLeft, liftCenter, liftRight, totalLift))
     
-              
     def run(self):
         # This method runs as its own thread, catching SensorSamples,
         # updating the GUI, processing data, and tossing it into a file
@@ -113,7 +124,10 @@ class SampleCollector(QThread):
             scaledLiftRight = liftRight * self.liftRightScaling
             aoa = aoa * self.aoaSlope + self.aoaZero
             drag = drag * self.dragScaling
-
+            
+            volts = latestSample.volts * self.voltsSlope + self.voltsZero
+            amps = latestSample.amps * self.ampsSlope + self.ampsZero
+            
             # Crunch the total lift and pitching moments
             totalLift = scaledLiftLeft + scaledLiftCenter + scaledLiftRight
             pitchMoment = (totalLift * 5.63) + \
@@ -135,6 +149,7 @@ class SampleCollector(QThread):
                 # Think of this as a high-pass brickwall filter
                 airspeed = 0.0
                                                           
+            self.tunnelWindow.setPower(volts * amps)
             self.tunnelWindow.setAoa(aoa)
             self.tunnelWindow.tblLiftDragMoment.setUpdatesEnabled(False)
             self.tunnelWindow.setAirspeed(airspeed)
@@ -146,13 +161,13 @@ class SampleCollector(QThread):
             self.tunnelWindow.updateGraphs(fTotalLift, fDrag, fPitchMoment,
                                            airspeed)
             
-            self.dumpData(airspeed, aoa, drag, scaledLiftLeft,
+            self.dumpData(volts, amps, airspeed, aoa, drag, scaledLiftLeft,
                           scaledLiftCenter, scaledLiftRight, totalLift)
             
             if (self.saveSamples):
                 self.saveSamples = False
-                processedSample = ProcessedSample(latestSample.volts,
-                                                  latestSample.amps,
+                processedSample = ProcessedSample(volts,
+                                                  amps,
                                                   latestSample.aoa,
                                                   latestSample.rpm,
                                                   airspeed,

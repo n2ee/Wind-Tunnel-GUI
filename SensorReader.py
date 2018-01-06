@@ -66,10 +66,15 @@ class SensorReader(QThread):
             airspeedPort = int(config.getItem("PhidgetBoards", "airspeedport"))
             hotwirePort = int(config.getItem("PhidgetBoards", "hotwireport"))
             aoaPort = int(config.getItem("PhidgetBoards", "aoaport"))
+            voltsPort = int(config.getItem("PhidgetBoards", "voltsport"))
+            ampsPort = int(config.getItem("PhidgetBoards", "ampsport"))
 
             self.airspeed = AnalogInput(serialNo, airspeedPort)
             self.hotwire = AnalogInput(serialNo, hotwirePort)
             self.aoa = AnalogInput(serialNo, aoaPort)
+            self.volts = AnalogInput(serialNo, voltsPort)
+            self.amps = AnalogInput(serialNo, ampsPort)
+
         except PhidgetException as e:
             print ("PhidgetException %i: %s" % (e.code, e.details))
             sys.exit(1)
@@ -103,11 +108,17 @@ class SensorReader(QThread):
             try:
                 currentSample.airspeed = self.airspeed.getScaledValue(1000)
                 currentSample.hotwire = self.hotwire.getScaledValue(1000)
+                
                 currentSample.aoa = self.aoa.getScaledValue(1000)
+                
+                currentSample.volts = self.volts.getScaledValue(1000)
+                currentSample.amps = self.amps.getScaledValue(1000)
+                
                 currentSample.liftLeft = self.liftLeft.getVoltageRatio()
                 currentSample.liftCenter = self.liftCenter.getVoltageRatio()
                 currentSample.liftRight = self.liftRight.getVoltageRatio()
                 currentSample.drag = self.drag.getVoltageRatio()
+                
                 currentSample.timestamp = datetime.datetime.now()
                 self.dataQ.put_nowait(currentSample)
             except PhidgetException as e:
