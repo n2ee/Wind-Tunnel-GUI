@@ -67,13 +67,13 @@ class SensorReader(QThread):
             hotwirePort = int(config.getItem("PhidgetBoards", "hotwireport"))
             aoaPort = int(config.getItem("PhidgetBoards", "aoaport"))
             voltsPort = int(config.getItem("PhidgetBoards", "voltsport"))
-            ampsPort = int(config.getItem("PhidgetBoards", "ampsport"))
+            #ampsPort = int(config.getItem("PhidgetBoards", "ampsport"))
 
             self.airspeed = AnalogInput(serialNo, airspeedPort)
             self.hotwire = AnalogInput(serialNo, hotwirePort)
             self.aoa = AnalogInput(serialNo, aoaPort)
             self.volts = AnalogInput(serialNo, voltsPort)
-            self.amps = AnalogInput(serialNo, ampsPort)
+            #self.amps = AnalogInput(serialNo, ampsPort)
 
         except PhidgetException as e:
             print ("PhidgetException %i: %s" % (e.code, e.details))
@@ -101,7 +101,6 @@ class SensorReader(QThread):
         while (True):
             
             # Need to add the following items:
-            # currentSample.volts = 
             # currentSample.amps = 
             # currentSample.rpm =
             
@@ -111,9 +110,9 @@ class SensorReader(QThread):
                 
                 currentSample.aoa = self.aoa.getScaledValue(1000)
                 
-                currentSample.volts = self.volts.getScaledValue(1000)
-                currentSample.amps = self.amps.getScaledValue(1000)
-                
+                currentSample.volts = self.volts.getVoltage()
+                #currentSample.amps = self.amps.getScaledValue(1000)
+            
                 currentSample.liftLeft = self.liftLeft.getVoltageRatio()
                 currentSample.liftCenter = self.liftCenter.getVoltageRatio()
                 currentSample.liftRight = self.liftRight.getVoltageRatio()

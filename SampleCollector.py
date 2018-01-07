@@ -79,8 +79,8 @@ class SampleCollector(QThread):
     def setLoadTare(self):
         self.updateLoadTare = True
 
-    def dumpData(self, airspeed, aoa, drag, liftLeft, liftCenter, liftRight, 
-                 totalLift, volts, amps):
+    def dumpData(self, volts, amps, airspeed, aoa, drag, liftLeft, liftCenter, liftRight, 
+                 totalLift):
         print("V=%f, A=%f, as=%f, aoa=%f, drag=%f, LL=%f, LC=%f, LR=%f, TL=%f" \
               % (volts, amps, airspeed, aoa, drag,
                  liftLeft, liftCenter, liftRight, totalLift))
