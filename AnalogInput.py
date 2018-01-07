@@ -40,7 +40,7 @@ class AnalogInput(VoltageInput):
         
 def main():
 
-    ai = AnalogInput(315317, 3)
+    ai = AnalogInput(315317, 4)
     
     print("minV = %f, maxV = %f, rangeV = %f" % (ai.minV, ai.maxV, ai.rangeV))
     
