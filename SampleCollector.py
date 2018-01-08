@@ -11,6 +11,7 @@ samples to the display UI and/or writes to a file.
 
 """
 import os
+from pathlib import Path
 from math import sqrt
 
 from PyQt5 import QtCore
@@ -66,7 +67,7 @@ class SampleCollector(QThread):
     def __del__(self):
         self.wait()
 
-    def doSave(self, destFile = os.devnull, config = ""):
+    def doSave(self, destFile = Path(os.devnull), config = ""):
         try:
             self.config = ', "' + config + '"\n'
 

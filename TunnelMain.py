@@ -7,6 +7,7 @@ Created on Wed Oct 25 17:13:08 2017
 """
 
 import sys
+from pathlib import Path
 
 from queue import Queue
 from PyQt5 import  QtCore, QtWidgets
@@ -48,8 +49,16 @@ class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
         self.sampleCollector.setLoadTare()
 
     def saveResults(self):
-        fname = str(self.inpRunName.text())
+        fname = Path(str(self.inpRunName.text()))
         # FIXME - Here would be a good place to sanity-check the file name
+        destDirname = self.config.getItem("General", "DataDestinationDir")
+        
+        if (destDirname == None):
+            destDirname = Path.cwd()
+        else:
+           Path(destDirname).mkdir(parents = True, exist_ok = True) 
+        
+        fname = destDirname / fname
         print ("Save Results clicked: %s" % fname)
         self.sampleCollector.doSave(fname, str(self.inpConfiguration.text()))
 

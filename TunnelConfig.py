@@ -51,4 +51,4 @@ if __name__ == "__main__":
     print (tunnelConfig.getItem("Version", "version"))
     print (tunnelConfig.getItem("PhidgetBoards", "liftboardserialno"))
     print (tunnelConfig.getItem("General", "UseSimulatedData"))
-    
+    print (tunnelConfig.getItem("General", "DataDestinationDir"))
