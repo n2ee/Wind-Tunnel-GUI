@@ -35,8 +35,8 @@ class SensorSimulator(QThread):
             theta = (theta + 1) % 360 
             theta45Lead = (45 + theta) % 360
             theta45Lag = (theta + 315) % 360
-            dummySample.volts = 11 + 2.0 * math.cos(math.radians(theta))
-            dummySample.amps = 0.25 * math.sin(math.radians(theta)) 
+            dummySample.volts = 4.5 + 0.5 * math.cos(math.radians(theta))
+            dummySample.amps = abs(0.25 * math.sin(math.radians(theta)))
             dummySample.aoa = (theta /45) - 4
             dummySample.rpm = 10 * theta / 2
             dummySample.airspeed = 500.0 + int(math.cos(math.radians(theta / 3)) * 500)
