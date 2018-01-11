@@ -19,7 +19,7 @@ class AnalogInput(VoltageInput):
     
     def __init__(self, serialNo, channel):
         VoltageInput.__init__(self)
-        
+
         self.setDeviceSerialNumber(serialNo)
         self.setChannel(channel)
 
@@ -29,7 +29,12 @@ class AnalogInput(VoltageInput):
             print("PhidgetException on open - code %i: %s" % (e.code, e.details))
             raise PhidgetException(e.code)
 
-        self.setDataInterval(self.getMinDataInterval())
+        try:
+            minDataInterval = self.getMinDataInterval()
+            self.setDataInterval(minDataInterval)
+        except PhidgetException as e:
+            print("Ignored PhidgetException on set/getDataInterval - code %i: %s" % (e.code, e.details))
+
         self.minV = self.getMinVoltage()
         self.maxV = self.getMaxVoltage()
         self.rangeV = self.maxV - self.minV
@@ -40,7 +45,7 @@ class AnalogInput(VoltageInput):
         
 def main():
 
-    ai = AnalogInput(315317, 4)
+    ai = AnalogInput(315317, 5)
     
     print("minV = %f, maxV = %f, rangeV = %f" % (ai.minV, ai.maxV, ai.rangeV))
     
