@@ -6,7 +6,8 @@ Created on Wed Oct 25 17:13:08 2017
 @author: markm
 """
 
-import sys
+import sys, re, unicodedata
+
 from pathlib import Path
 
 from queue import Queue
@@ -48,9 +49,32 @@ class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
     def loadTare(self):
         self.sampleCollector.setLoadTare()
 
+    def slugify(value):
+        """
+        Normalizes string, converts to lowercase, removes non-alpha characters,
+        and converts spaces to hyphens. Borrowed from
+        https://stackoverflow.com/questions/295135/turn-a-string-into-a-valid-filename
+        """
+        print("value = " % value)
+        sleep(2)
+        value = str(unicodedata.normalize('NFKD', value).encode('ascii', 'ignore'))
+        print("value = " % value)
+        sleep(2)
+        # Chomp the leading 'b\'
+        value = value[2:]
+        print("value = " % value)
+        sleep(2)
+        value = str(re.sub("[^\w\s-]", "", value).strip().lower())
+        print("value = " % value)
+        sleep(2)
+        value = str(re.sub("[-\s]+", "-", value))
+        print("value = " % value)
+        sleep(2)
+        return value
+    
     def saveResults(self):
-        fname = Path(str(self.inpRunName.text()))
-        # FIXME - Here would be a good place to sanity-check the file name
+        fname = slugify(str(self.inpRunName.text()))
+        fname = Path(fname)
         destDirname = self.config.getItem("General", "DataDestinationDir")
         
         if (destDirname == None):

@@ -161,9 +161,9 @@ class SampleCollector(QThread):
 
             self.tunnelWindow.updateGraphs(fTotalLift, fDrag, fPitchMoment,
                                            airspeed)
-            
-            self.dumpData(volts, amps, airspeed, aoa, drag, scaledLiftLeft,
-                          scaledLiftCenter, scaledLiftRight, totalLift)
+
+            #self.dumpData(volts, amps, airspeed, aoa, drag, scaledLiftLeft,
+            #              scaledLiftCenter, scaledLiftRight, totalLift)
             
             if (self.saveSamples):
                 self.saveSamples = False
