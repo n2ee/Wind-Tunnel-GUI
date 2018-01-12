@@ -54,7 +54,8 @@ class SampleCollector(QThread):
 
         self.ampsSlope = float(config.getItem("Amps", "slope"))
         self.ampsZero = float(config.getItem("Amps", "zero"))
-
+        self.shuntOhms = float(config.getItem("Amps", "shunt"))
+        
         self.aoaSlope = float(config.getItem("AoA", "slope"))
         self.aoaZero = float(config.getItem("AoA", "zero"))
 
@@ -127,8 +128,13 @@ class SampleCollector(QThread):
             drag = drag * self.dragScaling
             
             volts = latestSample.volts * self.voltsSlope + self.voltsZero
-            amps = latestSample.amps * self.ampsSlope + self.ampsZero
             
+            # Because of the A/D resolution and the small values of deltaVolts,
+            # we may need to filter amps to smooth out the appearance on the
+            # display.
+            deltaVolts = latestSample.amps * self.ampsSlope + self.ampsZero
+            amps = deltaVolts / self.shuntOhms
+
             # Crunch the total lift and pitching moments
             totalLift = scaledLiftLeft + scaledLiftCenter + scaledLiftRight
             pitchMoment = (totalLift * 5.63) + \
