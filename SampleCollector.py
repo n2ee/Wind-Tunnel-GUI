@@ -64,7 +64,13 @@ class SampleCollector(QThread):
 
         self.airspeedZero = float(config.getItem("Airspeed", "zero"))
         self.airspeedSlope = float(config.getItem("Airspeed", "slope"))
-                                  
+                  
+        self.hotwireLowerLimit = float(config.getItem("Hotwire",
+                                                       "lowerlimit"))
+
+        self.hotwireZero = float(config.getItem("Hotwire", "zero"))
+        self.hotwireSlope = float(config.getItem("Hotwire", "slope"))
+                  
     def __del__(self):
         self.wait()
 
@@ -81,10 +87,10 @@ class SampleCollector(QThread):
     def setLoadTare(self):
         self.updateLoadTare = True
 
-    def dumpData(self, volts, amps, airspeed, aoa, drag, liftLeft, liftCenter, liftRight, 
+    def dumpData(self, volts, amps, airspeed, hotwire, aoa, drag, liftLeft, liftCenter, liftRight, 
                  totalLift):
-        print("V=%f, A=%f, as=%f, aoa=%f, drag=%f, LL=%f, LC=%f, LR=%f, TL=%f" \
-              % (volts, amps, airspeed, aoa, drag,
+        print("V=%f, A=%f, as=%f, hw=%f, aoa=%f, drag=%f, LL=%f, LC=%f, LR=%f, TL=%f" \
+              % (volts, amps, airspeed, hotwire, aoa, drag,
                  liftLeft, liftCenter, liftRight, totalLift))
     
     def run(self):
@@ -97,6 +103,9 @@ class SampleCollector(QThread):
         # pitchMomentFilter = KalmanFilter(150e-06, 1.5e-03)
         # dragFilter = KalmanFilter(150e-06, 1.5e-03)
         
+        liftLeftFilter = RollingAverageFilter()
+        liftCenterFilter = RollingAverageFilter()
+        liftRightFilter = RollingAverageFilter()
         totalLiftFilter = RollingAverageFilter()
         pitchMomentFilter = RollingAverageFilter()
         dragFilter = RollingAverageFilter()
@@ -116,14 +125,15 @@ class SampleCollector(QThread):
 
             # Get the latest lift & drag, adjust for tare
             drag = latestSample.drag - self.dragTare
-            liftLeft = latestSample.liftLeft - self.leftLoadTare
-            liftCenter = latestSample.liftCenter - self.centerLoadTare
-            liftRight = latestSample.liftRight - self.rightLoadTare
+            rawLiftLeft = latestSample.liftLeft - self.leftLoadTare
+            rawLiftCenter = latestSample.liftCenter - self.centerLoadTare
+            rawLiftRight = latestSample.liftRight - self.rightLoadTare
 
             # Scale to taste
-            scaledLiftLeft = liftLeft * self.liftLeftScaling
-            scaledLiftCenter = liftCenter * self.liftCenterScaling
-            scaledLiftRight = liftRight * self.liftRightScaling
+            liftLeft = rawLiftLeft * self.liftLeftScaling
+            liftCenter = rawLiftCenter * self.liftCenterScaling
+            liftRight = rawLiftRight * self.liftRightScaling
+            
             aoa = aoa * self.aoaSlope + self.aoaZero
             drag = drag * self.dragScaling
             
@@ -136,11 +146,14 @@ class SampleCollector(QThread):
             amps = deltaVolts / self.shuntOhms
 
             # Crunch the total lift and pitching moments
-            totalLift = scaledLiftLeft + scaledLiftCenter + scaledLiftRight
+            totalLift = liftLeft + liftCenter + liftRight
             pitchMoment = (totalLift * 5.63) + \
-                            (scaledLiftLeft + scaledLiftRight) * 1.44
+                            (liftLeft + liftRight) * 1.44
 
             # Generate filtered values
+            fLiftLeft = liftLeftFilter.get_filtered_value(liftLeft)
+            fLiftCenter = liftCenterFilter.get_filtered_value(liftCenter)
+            fLiftRight = liftRightFilter.get_filtered_value(liftRight)
             fDrag = dragFilter.get_filtered_value(drag) * self.dragScaling          
             fTotalLift = totalLiftFilter.get_filtered_value(totalLift)
             fPitchMoment = pitchMomentFilter.get_filtered_value(pitchMoment)
@@ -155,11 +168,19 @@ class SampleCollector(QThread):
             if (airspeed < self.airspeedLowerLimit):
                 # Think of this as a high-pass brickwall filter
                 airspeed = 0.0
-                                                          
+            
+            # Compute hotwire speed
+            # FIXME - need to calibrate values
+            hotwire = latestSample.hotwire
+            hotwire = hotwire * self.hotwireSlope + self.hotwireZero
+            if (hotwire < self.airspeedLowerLimit):
+                hotwire = 0.0
+                                              
             self.tunnelWindow.setPower(volts * amps)
             self.tunnelWindow.setAoa(aoa)
             self.tunnelWindow.tblLiftDragMoment.setUpdatesEnabled(False)
             self.tunnelWindow.setAirspeed(airspeed)
+            self.tunnelWindow.setAnenometer(hotwire)
             self.tunnelWindow.setLift(fTotalLift, fTotalLiftStdDev)
             self.tunnelWindow.setDrag(fDrag, fDragStdDev)
             self.tunnelWindow.setMoment(fPitchMoment, fPitchMomentStdDev)
@@ -168,8 +189,8 @@ class SampleCollector(QThread):
             self.tunnelWindow.updateGraphs(fTotalLift, fDrag, fPitchMoment,
                                            airspeed)
 
-            #self.dumpData(volts, amps, airspeed, aoa, drag, scaledLiftLeft,
-            #              scaledLiftCenter, scaledLiftRight, totalLift)
+            self.dumpData(volts, amps, airspeed, hotwire, aoa, drag, liftLeft,
+                          liftCenter, liftRight, totalLift)
             
             if (self.saveSamples):
                 self.saveSamples = False
@@ -178,6 +199,10 @@ class SampleCollector(QThread):
                                                   latestSample.aoa,
                                                   latestSample.rpm,
                                                   airspeed,
+                                                  hotwire,
+                                                  fLiftLeft,
+                                                  fLiftCenter,
+                                                  fLiftRight,
                                                   fTotalLift,
                                                   fDrag,
                                                   fPitchMoment,
