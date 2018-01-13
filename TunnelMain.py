@@ -31,7 +31,9 @@ class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
         self.config = TunnelConfig()
 
         # Update displayed sample rate
-        self.outSampleRate.display(self.dlSampleRate.value())
+        sampleRate = self.config.getItem("General", "samplerate")      
+
+        self.outSampleRate.display(sampleRate)
 
         # Connect buttons to their corresponding functions
         self.btnLoadTare.clicked.connect(self.loadTare)
