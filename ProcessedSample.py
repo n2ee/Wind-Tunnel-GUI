@@ -28,10 +28,21 @@ class ProcessedSample(object):
         self.pitchMoment = pitchmoment
         self.timestamp = timestamp
 
+    """
+    Report the header fields, suitable for writing into a csv file.
+    Note that the headers need to be kept in sync with the data fields
+    reported by __repr__().
+    """
+    @staticmethod
+    def header():
+        return "Volts, Amps, Aoa, RPM, Airspeed, Hotwire, " \
+               "LiftLeft, LiftCenter, LiftRight, TotalLift, " \
+               "Drag, PitchMoment, Timestamp"
+               
     def __repr__(self):
-        return "volts: %f, amps: %f, aoa: %f, rpm: %d, airspeed: %f, " \
-                "hotwire: %f, liftLeft: %f, liftCenter: %f, liftRight: %f, " \
-                "totalLift: %f, drag: %f, pitchMoment: %f, timestamp: %s" % \
+        return "%f, %f, %f, %d, %f, %f, " \
+                "%f, %f, %f, %f, " \
+                "%f, %f, %s" % \
             (self.volts, self.amps, self.aoa, self.rpm, self.airspeed,
              self.hotwire, self.liftLeft, self.liftCenter, self.liftRight, 
              self.totalLift, self.drag, self.pitchMoment, self.timestamp)        
@@ -42,6 +53,8 @@ if __name__ == "__main__":
                                   i / 10.0, i / 10.0, i / 10.0, i) \
                     for i in range(10)]
 
+    print (ProcessedSample.header())
+    
     for i in range(10):
         print (testSample[i])
  

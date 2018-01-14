@@ -78,6 +78,15 @@ class SampleCollector(QThread):
         try:
             self.config = ', "' + config + '"\n'
 
+            # does destFile exist?
+            # no - open, write header, close
+            
+            if not destFile.is_file():
+                self.f = open(destFile, "w")
+                self.f.write(str(ProcessedSample.header()))
+                self.f.write(", comment\n")
+                self.f.close()
+                
             self.f = open(destFile, "a")
             self.saveSamples = True
         except IOError:
