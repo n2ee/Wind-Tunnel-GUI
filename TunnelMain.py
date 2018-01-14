@@ -36,6 +36,7 @@ class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
         self.outSampleRate.display(sampleRate)
 
         # Connect buttons to their corresponding functions
+        self.btnAoAZero.clicked.connect(self.aoaZero)
         self.btnLoadTare.clicked.connect(self.loadTare)
         self.btnSaveResults.clicked.connect(self.saveResults)
 
@@ -47,6 +48,9 @@ class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
         self.dragGraph = None
         self.pitchMomentGraph = None
         self.airspeedGraph = None
+
+    def aoaZero(self):
+        self.sampleCollector.setAoAZero()
 
     def loadTare(self):
         self.sampleCollector.setLoadTare()
