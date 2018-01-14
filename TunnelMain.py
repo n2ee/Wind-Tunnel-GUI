@@ -154,12 +154,20 @@ class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
         else:
             self.sensorRdr = SensorReader(tunnelWindow, tunnelDataQ)
 
+        self.sensorRdr.daemon = True
         self.sensorRdr.start()
 
+    def stopSensorReader(self):
+        self.sensorRdr.terminate()
+        
     def startSampleCollector(self, tunnelWindow, tunnelDataQ):
         self.sampleCollector = SampleCollector(tunnelWindow, tunnelDataQ)
+        self.sampleCollector.daemon = True
         self.sampleCollector.start()
 
+    def stopSampleCollector(self):
+        self.sampleCollector.terminate()
+        
     def startGraphs(self):
 
         enableGraphs = self.config.getItem("General", "EnableGraphs")
@@ -212,7 +220,9 @@ def main():
     tg.startSampleCollector(tg, tdQ)
 
     app.exec_()
-
+    
+    tg.stopSensorReader()
+    tg.stopSampleCollector()
 
 if __name__ == "__main__":
     main()
