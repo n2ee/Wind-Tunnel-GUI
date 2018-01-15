@@ -151,7 +151,7 @@ class SampleCollector(QThread):
             liftCenter = rawLiftCenter * self.liftCenterScaling
             liftRight = rawLiftRight * self.liftRightScaling
             
-            aoa = rawAoA * self.aoaSlope + self.aoaZero
+            aoa = rawAoA * self.aoaSlope
 
             volts = latestSample.volts * self.voltsSlope + self.voltsZero
             # Because of the A/D resolution and the small values of deltaVolts,
@@ -167,7 +167,7 @@ class SampleCollector(QThread):
 
             # Scale the drag value and remove the lift component
             drag = rawDrag * self.dragScaling
-            drag = drag - (totalLift * sin(radians(aoa)))
+            drag = drag - (totalLift * sin(radians(aoa + self.aoaZero)))
             
             # Generate filtered values
             fLiftLeft = liftLeftFilter.get_filtered_value(liftLeft)
@@ -194,7 +194,8 @@ class SampleCollector(QThread):
             hotwire = hotwire * self.hotwireSlope + self.hotwireZero
             if (hotwire < self.airspeedLowerLimit):
                 hotwire = 0.0
-                                              
+
+            self.tunnelWindow.updateSpinner()                                  
             self.tunnelWindow.setPower(volts * amps)
             self.tunnelWindow.setAoa(aoa)
             self.tunnelWindow.tblLiftDragMoment.setUpdatesEnabled(False)
