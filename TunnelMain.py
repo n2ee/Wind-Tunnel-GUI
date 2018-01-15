@@ -24,6 +24,9 @@ from LiveGraph import LiveGraph
 
 class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
 
+    spinChar = ["|", "/", "-", "\\", "+"]
+    spindex = 0
+                
     def __init__(self):
         super(self.__class__, self).__init__()
         self.setupUi(self)
@@ -146,6 +149,12 @@ class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
         power = float('%.1f' % power)
         self.outPower.display(str(power))
 
+    def updateSpinner(self):
+        self.lblSpinner.setText(self.spinChar[self.spindex])
+        self.spindex += 1
+        if (self.spindex >= len(self.spinChar)):
+                self.spindex = 0
+        
     def startSensorReader(self, tunnelWindow, tunnelDataQ):
         useSimulatedData = self.config.getItem("General",
                                                "UseSimulatedData")
