@@ -15,7 +15,7 @@ from pathlib import Path
 from math import radians, sin, sqrt
 
 from PyQt5 import QtCore
-from PyQt5.QtCore import QThread
+from PyQt5.QtCore import QThread, pyqtSignal
 
 from TunnelConfig import TunnelConfig
 from ProcessedSample import ProcessedSample
@@ -35,10 +35,11 @@ class SampleCollector(QThread):
     aoaTare = 0.0 # We call this 'tare' to distinguish from the y-intercept of the raw value
     updateAoAZero = False
     
-    def __init__(self, tw, dQ):
+    updateWindow = pyqtSignal('PyQt_PyObject')
+    
+    def __init__(self, dQ):
         QThread.__init__(self)
         self.dataQ = dQ
-        self.tunnelWindow = tw
         config = TunnelConfig()
         self.liftLeftScaling = float(config.getItem("StrainGauges",
                                                     "liftleftscaling"))
@@ -69,7 +70,7 @@ class SampleCollector(QThread):
 
         self.hotwireZero = float(config.getItem("Hotwire", "zero"))
         self.hotwireSlope = float(config.getItem("Hotwire", "slope"))
-                  
+                          
     def __del__(self):
         self.wait()
 
@@ -189,49 +190,40 @@ class SampleCollector(QThread):
                 airspeed = 0.0
             
             # Compute hotwire speed
-            # FIXME - need to calibrate values
             hotwire = latestSample.hotwire
             hotwire = hotwire * self.hotwireSlope + self.hotwireZero
             if (hotwire < self.airspeedLowerLimit):
                 hotwire = 0.0
 
-            self.tunnelWindow.updateSpinner()                                  
-            self.tunnelWindow.setPower(volts * amps)
-            self.tunnelWindow.setAoa(aoa)
-            self.tunnelWindow.tblLiftDragMoment.setUpdatesEnabled(False)
-            self.tunnelWindow.setAirspeed(airspeed)
-            self.tunnelWindow.setAnenometer(hotwire)
-            self.tunnelWindow.setLift(fTotalLift, fTotalLiftStdDev)
-            self.tunnelWindow.setDrag(fDrag, fDragStdDev)
-            self.tunnelWindow.setMoment(fPitchMoment, fPitchMomentStdDev)
+            processedSample = ProcessedSample(volts,
+                                              amps,
+                                              aoa,
+                                              latestSample.rpm,
+                                              airspeed,
+                                              hotwire,
+                                              fLiftLeft,
+                                              fLiftCenter,
+                                              fLiftRight,
+                                              fTotalLift,
+                                              fTotalLiftStdDev,
+                                              fDrag,
+                                              fDragStdDev,
+                                              fPitchMoment,
+                                              fPitchMomentStdDev,
+                                              latestSample.timestamp)
 
-            self.tunnelWindow.updateGraphs(fTotalLift, fDrag, fPitchMoment,
-                                           airspeed)
-            
-            self.tunnelWindow.tblLiftDragMoment.setUpdatesEnabled(True)
-
-            self.dumpData(volts, amps, airspeed, hotwire, aoa, drag, liftLeft,
-                          liftCenter, liftRight, totalLift)
-            
             if (self.saveSamples):
                 self.saveSamples = False
-                processedSample = ProcessedSample(volts,
-                                                  amps,
-                                                  latestSample.aoa,
-                                                  latestSample.rpm,
-                                                  airspeed,
-                                                  hotwire,
-                                                  fLiftLeft,
-                                                  fLiftCenter,
-                                                  fLiftRight,
-                                                  fTotalLift,
-                                                  fDrag,
-                                                  fPitchMoment,
-                                                  latestSample.timestamp)
                 # f is opened in doSave(), and remains open until
                 # the requested samples are written here.
                 self.f.write(str(processedSample) + self.config)
                 self.f.close()
+                
+            self.updateWindow.emit(processedSample)
+
+            self.dumpData(volts, amps, airspeed, hotwire, aoa, drag, liftLeft,
+                          liftCenter, liftRight, totalLift)
+            
 
 
 
