@@ -23,11 +23,11 @@
       <height>32</height>
      </rect>
     </property>
-    <property name="toolTipDuration">
-     <number>4</number>
-    </property>
     <property name="text">
      <string>Set Load Tare</string>
+    </property>
+    <property name="toolTipDuration" stdset="0">
+     <number>4</number>
     </property>
    </widget>
    <widget class="QLineEdit" name="inpRunName">
@@ -497,28 +497,15 @@
      <rect>
       <x>190</x>
       <y>130</y>
-      <width>81</width>
+      <width>111</width>
       <height>32</height>
      </rect>
-    </property>
-    <property name="toolTipDuration">
-     <number>4</number>
     </property>
     <property name="text">
      <string>Set AOA Zero</string>
     </property>
-   </widget>
-   <widget class="QLabel" name="lblSpinner">
-    <property name="geometry">
-     <rect>
-      <x>520</x>
-      <y>330</y>
-      <width>16</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>-</string>
+    <property name="toolTipDuration" stdset="0">
+     <number>4</number>
     </property>
    </widget>
   </widget>

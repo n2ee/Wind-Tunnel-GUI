@@ -16,7 +16,7 @@ class Ui_MainWindow(object):
         self.centralwidget.setObjectName("centralwidget")
         self.btnLoadTare = QtWidgets.QPushButton(self.centralwidget)
         self.btnLoadTare.setGeometry(QtCore.QRect(90, 320, 113, 32))
-        self.btnLoadTare.setToolTipDuration(4)
+        self.btnLoadTare.setProperty("toolTipDuration", 4)
         self.btnLoadTare.setObjectName("btnLoadTare")
         self.inpRunName = QtWidgets.QLineEdit(self.centralwidget)
         self.inpRunName.setGeometry(QtCore.QRect(110, 20, 261, 21))
@@ -141,12 +141,9 @@ class Ui_MainWindow(object):
         self.lblMPH_2.setGeometry(QtCore.QRect(480, 150, 31, 16))
         self.lblMPH_2.setObjectName("lblMPH_2")
         self.btnAoAZero = QtWidgets.QPushButton(self.centralwidget)
-        self.btnAoAZero.setGeometry(QtCore.QRect(190, 130, 81, 32))
-        self.btnAoAZero.setToolTipDuration(4)
+        self.btnAoAZero.setGeometry(QtCore.QRect(190, 130, 111, 32))
+        self.btnAoAZero.setProperty("toolTipDuration", 4)
         self.btnAoAZero.setObjectName("btnAoAZero")
-        self.lblSpinner = QtWidgets.QLabel(self.centralwidget)
-        self.lblSpinner.setGeometry(QtCore.QRect(520, 330, 16, 16))
-        self.lblSpinner.setObjectName("lblSpinner")
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
@@ -180,7 +177,6 @@ class Ui_MainWindow(object):
         self.lblFtPerSec_2.setText(_translate("MainWindow", "ft/sec"))
         self.lblMPH_2.setText(_translate("MainWindow", "MPH"))
         self.btnAoAZero.setText(_translate("MainWindow", "Set AOA Zero"))
-        self.lblSpinner.setText(_translate("MainWindow", "-"))
 
 
 if __name__ == "__main__":
