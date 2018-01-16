@@ -12,7 +12,7 @@ from pathlib import Path
 
 from queue import Queue
 from PyQt5 import  QtCore, QtWidgets
-from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QTableWidgetItem
 
 import Tunnel_Model
@@ -20,11 +20,13 @@ from TunnelConfig import TunnelConfig
 from SensorSimulator import SensorSimulator
 from SensorReader import SensorReader
 from SampleCollector import SampleCollector
-from ProcessedSample import ProcessedSample
 from LiveGraph import LiveGraph
 
 class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
-             
+
+    spinChar = ["|", "/", "-", "\\", "+"]
+    spindex = 0
+                
     def __init__(self):
         super(self.__class__, self).__init__()
         self.setupUi(self)
@@ -49,7 +51,7 @@ class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
         self.dragGraph = None
         self.pitchMomentGraph = None
         self.airspeedGraph = None
-        
+
     def aoaZero(self):
         self.sampleCollector.setAoAZero()
 
@@ -146,25 +148,13 @@ class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
     def setPower(self, power):
         power = float('%.1f' % power)
         self.outPower.display(str(power))
-        
-    @pyqtSlot(ProcessedSample)
-    def refreshWindow(self, currentData):
-        self.setPower(currentData.volts * currentData.amps)
-        self.setAoa(currentData.aoa)
-        self.setAirspeed(currentData.airspeed)
-        self.setAnenometer(currentData.hotwire)
-        
-        self.tblLiftDragMoment.setUpdatesEnabled(False)
-        self.setLift(currentData.totalLift, currentData.totalLiftStdDev)
-        self.setDrag(currentData.drag, currentData.dragStdDev)
-        self.setMoment(currentData.pitchMoment, 
-                       currentData.pitchMomentStdDev)
-        self.tblLiftDragMoment.setUpdatesEnabled(True)
 
-        self.updateGraphs(currentData.totalLift, currentData.drag, 
-                          currentData.pitchMoment, currentData.airspeed)
-            
-  
+    def updateSpinner(self):
+        self.lblSpinner.setText(self.spinChar[self.spindex])
+        self.spindex += 1
+        if (self.spindex >= len(self.spinChar)):
+                self.spindex = 0
+        
     def startSensorReader(self, tunnelWindow, tunnelDataQ):
         useSimulatedData = self.config.getItem("General",
                                                "UseSimulatedData")
@@ -183,9 +173,8 @@ class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
     def stopSensorReader(self):
         self.sensorRdr.terminate()
         
-    def startSampleCollector(self, tunnelDataQ):
-        self.sampleCollector = SampleCollector(tunnelDataQ)
-        self.sampleCollector.updateWindow.connect(self.refreshWindow)
+    def startSampleCollector(self, tunnelWindow, tunnelDataQ):
+        self.sampleCollector = SampleCollector(tunnelWindow, tunnelDataQ)
         self.sampleCollector.daemon = True
         self.sampleCollector.start()
 
@@ -241,7 +230,7 @@ def main():
     tg.show()
     tdQ = Queue(16384)  # Just a guess - probably shouldn't make it too big.
     tg.startSensorReader(tg, tdQ)
-    tg.startSampleCollector(tdQ)
+    tg.startSampleCollector(tg, tdQ)
 
     app.exec_()
     
