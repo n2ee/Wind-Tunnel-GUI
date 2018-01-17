@@ -23,11 +23,11 @@
       <height>32</height>
      </rect>
     </property>
+    <property name="toolTipDuration">
+     <number>4</number>
+    </property>
     <property name="text">
      <string>Set Load Tare</string>
-    </property>
-    <property name="toolTipDuration" stdset="0">
-     <number>4</number>
     </property>
    </widget>
    <widget class="QLineEdit" name="inpRunName">
@@ -98,7 +98,7 @@
    <widget class="QLabel" name="lblAirspeed">
     <property name="geometry">
      <rect>
-      <x>10</x>
+      <x>0</x>
       <y>90</y>
       <width>61</width>
       <height>16</height>
@@ -140,14 +140,19 @@
    <widget class="QLCDNumber" name="outSpeedMPH">
     <property name="geometry">
      <rect>
-      <x>80</x>
+      <x>60</x>
       <y>90</y>
-      <width>41</width>
+      <width>61</width>
       <height>31</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <pointsize>8</pointsize>
+     </font>
+    </property>
     <property name="digitCount">
-     <number>3</number>
+     <number>4</number>
     </property>
     <property name="segmentStyle">
      <enum>QLCDNumber::Flat</enum>
@@ -299,14 +304,14 @@
    <widget class="QLCDNumber" name="outSpeedFps">
     <property name="geometry">
      <rect>
-      <x>60</x>
+      <x>40</x>
       <y>130</y>
-      <width>61</width>
+      <width>81</width>
       <height>31</height>
      </rect>
     </property>
     <property name="digitCount">
-     <number>5</number>
+     <number>6</number>
     </property>
     <property name="segmentStyle">
      <enum>QLCDNumber::Flat</enum>
@@ -423,12 +428,12 @@
      <rect>
       <x>430</x>
       <y>140</y>
-      <width>41</width>
+      <width>81</width>
       <height>31</height>
      </rect>
     </property>
     <property name="digitCount">
-     <number>3</number>
+     <number>4</number>
     </property>
     <property name="segmentStyle">
      <enum>QLCDNumber::Flat</enum>
@@ -437,7 +442,7 @@
    <widget class="QLabel" name="lblAnemometer">
     <property name="geometry">
      <rect>
-      <x>330</x>
+      <x>340</x>
       <y>140</y>
       <width>91</width>
       <height>20</height>
@@ -453,7 +458,7 @@
    <widget class="QLabel" name="lblFtPerSec_2">
     <property name="geometry">
      <rect>
-      <x>480</x>
+      <x>520</x>
       <y>190</y>
       <width>41</width>
       <height>16</height>
@@ -466,14 +471,14 @@
    <widget class="QLCDNumber" name="outAnemometerFps">
     <property name="geometry">
      <rect>
-      <x>410</x>
+      <x>420</x>
       <y>180</y>
-      <width>61</width>
+      <width>91</width>
       <height>31</height>
      </rect>
     </property>
     <property name="digitCount">
-     <number>5</number>
+     <number>6</number>
     </property>
     <property name="segmentStyle">
      <enum>QLCDNumber::Flat</enum>
@@ -482,7 +487,7 @@
    <widget class="QLabel" name="lblMPH_2">
     <property name="geometry">
      <rect>
-      <x>480</x>
+      <x>520</x>
       <y>150</y>
       <width>31</width>
       <height>16</height>
@@ -501,13 +506,45 @@
       <height>32</height>
      </rect>
     </property>
+    <property name="toolTipDuration">
+     <number>4</number>
+    </property>
     <property name="text">
      <string>Set AOA Zero</string>
     </property>
-    <property name="toolTipDuration" stdset="0">
-     <number>4</number>
-    </property>
    </widget>
+   <zorder>outAnemometerFps</zorder>
+   <zorder>btnLoadTare</zorder>
+   <zorder>inpRunName</zorder>
+   <zorder>btnSaveResults</zorder>
+   <zorder>lblRunName</zorder>
+   <zorder>lblConfiguration</zorder>
+   <zorder>inpConfiguration</zorder>
+   <zorder>lblAirspeed</zorder>
+   <zorder>lblMPH</zorder>
+   <zorder>lblFtPerSec</zorder>
+   <zorder>outSpeedMPH</zorder>
+   <zorder>lblLift</zorder>
+   <zorder>lblDrag</zorder>
+   <zorder>lblMoment</zorder>
+   <zorder>tblLiftDragMoment</zorder>
+   <zorder>lblKg</zorder>
+   <zorder>lblLb</zorder>
+   <zorder>lblKgStd</zorder>
+   <zorder>lblSampleRate</zorder>
+   <zorder>outSpeedFps</zorder>
+   <zorder>outSampleRate</zorder>
+   <zorder>lblAoA</zorder>
+   <zorder>outAoaDeg</zorder>
+   <zorder>lblDeg</zorder>
+   <zorder>lblPower</zorder>
+   <zorder>outPower</zorder>
+   <zorder>lblWatts</zorder>
+   <zorder>outAnemometerMPH</zorder>
+   <zorder>lblAnemometer</zorder>
+   <zorder>lblFtPerSec_2</zorder>
+   <zorder>lblMPH_2</zorder>
+   <zorder>btnAoAZero</zorder>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
