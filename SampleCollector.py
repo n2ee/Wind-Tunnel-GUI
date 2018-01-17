@@ -18,6 +18,7 @@ from PyQt5 import QtCore
 from PyQt5.QtCore import QThread, pyqtSignal
 
 from TunnelConfig import TunnelConfig
+from TunnelPersist import TunnelPersist
 from ProcessedSample import ProcessedSample
 from Filter import KalmanFilter, RollingAverageFilter
 
@@ -34,7 +35,8 @@ class SampleCollector(QThread):
     updateLoadTare = False
     aoaTare = 0.0 # We call this 'tare' to distinguish from the y-intercept of the raw value
     updateAoAZero = False
-    
+    persist = TunnelPersist()
+
     updateWindow = pyqtSignal('PyQt_PyObject')
     
     def __init__(self, dQ):
@@ -70,7 +72,13 @@ class SampleCollector(QThread):
 
         self.hotwireZero = float(config.getItem("Hotwire", "zero"))
         self.hotwireSlope = float(config.getItem("Hotwire", "slope"))
-                          
+             
+        aoaTare = self.persist.getItem("AoA", "AoATare")
+        if aoaTare == None:
+            self.aoaTare = 0.0
+        else:
+            self.aoaTare = float(aoaTare)
+
     def __del__(self):
         self.wait()
 
@@ -137,6 +145,7 @@ class SampleCollector(QThread):
             if (self.updateAoAZero):
                 self.updateAoAZero = False
                 self.aoaTare = latestSample.aoa
+                self.persist.setItem("AoA", "AoATare", str(self.aoaTare))               
                 
             # Get the AoA
             rawAoA = latestSample.aoa - self.aoaTare
