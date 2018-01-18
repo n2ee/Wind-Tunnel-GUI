@@ -66,8 +66,6 @@ class SampleCollector(QThread):
 
         self.airspeedCountTare = float(config.getItem("Airspeed",
                                                           "counttare"))
-        self.airspeedZero = float(config.getItem("Airspeed", "zero"))
-        self.airspeedSlope = float(config.getItem("Airspeed", "slope"))
                   
         self.hotwireLowerLimit = float(config.getItem("Hotwire",
                                                        "lowerlimit"))
@@ -84,17 +82,14 @@ class SampleCollector(QThread):
     def __del__(self):
         self.wait()
 
-    def doSave(self, destFile = Path(os.devnull), config = ""):
+    def doSave(self, destFile = Path(os.devnull), runName = "", config = ""):
         try:
-            self.config = ', "' + config + '"\n'
-
-            # does destFile exist?
-            # no - open, write header, close
+            self.config = ', "' + runName + '", "' + config + '"\n'
             
             if not destFile.is_file():
                 self.f = open(destFile, "w")
                 self.f.write(str(ProcessedSample.header()))
-                self.f.write(", comment\n")
+                self.f.write(", run name, configuration\n")
                 self.f.close()
                 
             self.f = open(destFile, "a")
@@ -131,6 +126,8 @@ class SampleCollector(QThread):
         totalLiftFilter = RollingAverageFilter(10)
         pitchMomentFilter = RollingAverageFilter(10)
         dragFilter = RollingAverageFilter(10)
+        airspeedFilter = RollingAverageFilter(10)
+        hotwireFilter = RollingAverageFilter(10)
         aoa = 0.0
         drag = 0.0
         
@@ -180,22 +177,11 @@ class SampleCollector(QThread):
             # Scale the drag value and remove the lift component
             drag = rawDrag * self.dragScaling
             drag = drag - (totalLift * sin(radians(aoa + self.aoaZero)))
-            
-            # Generate filtered values
-            fLiftLeft = liftLeftFilter.get_filtered_value(liftLeft)
-            fLiftCenter = liftCenterFilter.get_filtered_value(liftCenter)
-            fLiftRight = liftRightFilter.get_filtered_value(liftRight)
-            fDrag = dragFilter.get_filtered_value(drag)         
-            fTotalLift = totalLiftFilter.get_filtered_value(totalLift)
-            fPitchMoment = pitchMomentFilter.get_filtered_value(pitchMoment)
-            fTotalLiftStdDev = sqrt(totalLiftFilter.get_variance())
-            fDragStdDev = sqrt(dragFilter.get_variance())
-            fPitchMomentStdDev = sqrt(pitchMomentFilter.get_variance())
+
             
             # Compute actual airspeed
             asCounts = latestSample.airspeed
-            asPressure = (asCounts - self.airspeedCountTare) * \
-                         self.airspeedSlope - self.airspeedZero
+            asPressure = (asCounts - self.airspeedCountTare) / 394.09
             try:
                 airspeed = sqrt((asPressure * 144.0 * 2.0) / 0.002378) * 0.682
             except ValueError:
@@ -212,12 +198,27 @@ class SampleCollector(QThread):
             if (hotwire < self.airspeedLowerLimit):
                 hotwire = 0.0
 
+            
+            # Generate filtered values
+            fLiftLeft = liftLeftFilter.get_filtered_value(liftLeft)
+            fLiftCenter = liftCenterFilter.get_filtered_value(liftCenter)
+            fLiftRight = liftRightFilter.get_filtered_value(liftRight)
+            fDrag = dragFilter.get_filtered_value(drag)         
+            fTotalLift = totalLiftFilter.get_filtered_value(totalLift)
+            fPitchMoment = pitchMomentFilter.get_filtered_value(pitchMoment)
+            fTotalLiftStdDev = sqrt(totalLiftFilter.get_variance())
+            fDragStdDev = sqrt(dragFilter.get_variance())
+            fPitchMomentStdDev = sqrt(pitchMomentFilter.get_variance())
+            fAirspeed = airspeedFilter.get_filtered_value(airspeed)
+            fHotwire = hotwireFilter.get_filtered_value(hotwire)
+            
             processedSample = ProcessedSample(volts,
                                               amps,
+                                              (volts * amps),
                                               aoa,
                                               latestSample.rpm,
-                                              airspeed,
-                                              hotwire,
+                                              fAirspeed,
+                                              fHotwire,
                                               fLiftLeft,
                                               fLiftCenter,
                                               fLiftRight,
