@@ -35,6 +35,8 @@ class SampleCollector(QThread):
     updateLoadTare = False
     aoaTare = 0.0 # We call this 'tare' to distinguish from the y-intercept of the raw value
     updateAoAZero = False
+    airspeedZero = 0.0
+    updateAirspeedZero = False
     persist = TunnelPersist()
 
     updateWindow = pyqtSignal('PyQt_PyObject')
@@ -64,20 +66,23 @@ class SampleCollector(QThread):
         self.airspeedLowerLimit = float(config.getItem("Airspeed",
                                                        "lowerlimit"))
 
-        self.airspeedCountTare = float(config.getItem("Airspeed",
-                                                          "counttare"))
-                  
         self.hotwireLowerLimit = float(config.getItem("Hotwire",
                                                        "lowerlimit"))
 
         self.hotwireZero = float(config.getItem("Hotwire", "zero"))
         self.hotwireSlope = float(config.getItem("Hotwire", "slope"))
              
-        aoaTare = self.persist.getItem("AoA", "AoATare")
+        aoaTare = self.persist.getItem("AoA", "Zero")
         if aoaTare == None:
             self.aoaTare = 0.0
         else:
             self.aoaTare = float(aoaTare)
+
+        airspeedZero = self.persist.getItem("Airspeed", "Zero")
+        if airspeedZero == None:
+            self.airspeedZero = 0.0
+        else:
+            self.airspeedZero = float(airspeedZero)
 
     def __del__(self):
         self.wait()
@@ -103,6 +108,9 @@ class SampleCollector(QThread):
 
     def setAoAZero(self):
         self.updateAoAZero = True
+
+    def setAirspeedZero(self):
+        self.updateAirspeedZero = True
 
     def dumpData(self, volts, amps, airspeed, hotwire, aoa, drag, liftLeft, liftCenter, liftRight, 
                  totalLift):
@@ -144,7 +152,13 @@ class SampleCollector(QThread):
             if (self.updateAoAZero):
                 self.updateAoAZero = False
                 self.aoaTare = latestSample.aoa
-                self.persist.setItem("AoA", "AoATare", str(self.aoaTare))               
+                self.persist.setItem("AoA", "Zero", str(self.aoaTare))               
+                
+            if (self.updateAirspeedZero):
+                self.updateAirspeedZero = False
+                self.airspeedZero = latestSample.airspeed
+                self.persist.setItem("Airspeed", "Zero", 
+                                     str(self.airspeedZero))               
                 
             # Get the AoA
             rawAoA = latestSample.aoa - self.aoaTare
@@ -181,7 +195,7 @@ class SampleCollector(QThread):
             
             # Compute actual airspeed
             asCounts = latestSample.airspeed
-            asPressure = (asCounts - self.airspeedCountTare) / 394.09
+            asPressure = (asCounts - self.airspeedZero) / 394.09
             try:
                 airspeed = sqrt((asPressure * 144.0 * 2.0) / 0.002378) * 0.682
             except ValueError:
