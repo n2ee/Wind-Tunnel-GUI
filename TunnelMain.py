@@ -38,6 +38,7 @@ class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
 
         # Connect buttons to their corresponding functions
         self.btnAoAZero.clicked.connect(self.aoaZero)
+        self.btnAoAZero.clicked.connect(self.airspeedZero)
         self.btnLoadTare.clicked.connect(self.loadTare)
         self.btnSaveResults.clicked.connect(self.saveResults)
 
@@ -52,6 +53,9 @@ class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
         
     def aoaZero(self):
         self.sampleCollector.setAoAZero()
+
+    def airspeedZero(self):
+        self.sampleCollector.setAirspeedZero()
 
     def loadTare(self):
         self.sampleCollector.setLoadTare()

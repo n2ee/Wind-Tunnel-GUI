@@ -6,28 +6,28 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>550</width>
-    <height>379</height>
+    <width>602</width>
+    <height>440</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Wind Tunnel</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QPushButton" name="btnLoadTare">
     <property name="geometry">
      <rect>
-      <x>90</x>
-      <y>320</y>
+      <x>170</x>
+      <y>390</y>
       <width>113</width>
       <height>32</height>
      </rect>
     </property>
-    <property name="toolTipDuration">
-     <number>4</number>
-    </property>
     <property name="text">
      <string>Set Load Tare</string>
+    </property>
+    <property name="toolTipDuration" stdset="0">
+     <number>4</number>
     </property>
    </widget>
    <widget class="QLineEdit" name="inpRunName">
@@ -43,8 +43,8 @@
    <widget class="QPushButton" name="btnSaveResults">
     <property name="geometry">
      <rect>
-      <x>280</x>
-      <y>320</y>
+      <x>430</x>
+      <y>310</y>
       <width>113</width>
       <height>32</height>
      </rect>
@@ -98,8 +98,8 @@
    <widget class="QLabel" name="lblAirspeed">
     <property name="geometry">
      <rect>
-      <x>0</x>
-      <y>90</y>
+      <x>20</x>
+      <y>100</y>
       <width>61</width>
       <height>16</height>
      </rect>
@@ -114,8 +114,8 @@
    <widget class="QLabel" name="lblMPH">
     <property name="geometry">
      <rect>
-      <x>130</x>
-      <y>100</y>
+      <x>150</x>
+      <y>110</y>
       <width>31</width>
       <height>16</height>
      </rect>
@@ -127,8 +127,8 @@
    <widget class="QLabel" name="lblFtPerSec">
     <property name="geometry">
      <rect>
-      <x>130</x>
-      <y>140</y>
+      <x>150</x>
+      <y>150</y>
       <width>41</width>
       <height>16</height>
      </rect>
@@ -140,8 +140,8 @@
    <widget class="QLCDNumber" name="outSpeedMPH">
     <property name="geometry">
      <rect>
-      <x>60</x>
-      <y>90</y>
+      <x>80</x>
+      <y>100</y>
       <width>61</width>
       <height>31</height>
      </rect>
@@ -161,8 +161,8 @@
    <widget class="QLabel" name="lblLift">
     <property name="geometry">
      <rect>
-      <x>50</x>
-      <y>220</y>
+      <x>40</x>
+      <y>290</y>
       <width>31</width>
       <height>16</height>
      </rect>
@@ -177,8 +177,8 @@
    <widget class="QLabel" name="lblDrag">
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>250</y>
+      <x>30</x>
+      <y>320</y>
       <width>41</width>
       <height>16</height>
      </rect>
@@ -193,8 +193,8 @@
    <widget class="QLabel" name="lblMoment">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>280</y>
+      <x>10</x>
+      <y>350</y>
       <width>61</width>
       <height>16</height>
      </rect>
@@ -209,8 +209,8 @@
    <widget class="QTableWidget" name="tblLiftDragMoment">
     <property name="geometry">
      <rect>
-      <x>90</x>
-      <y>210</y>
+      <x>80</x>
+      <y>280</y>
       <width>311</width>
       <height>101</height>
      </rect>
@@ -240,8 +240,8 @@
    <widget class="QLabel" name="lblKg">
     <property name="geometry">
      <rect>
-      <x>110</x>
-      <y>190</y>
+      <x>100</x>
+      <y>260</y>
       <width>61</width>
       <height>16</height>
      </rect>
@@ -256,8 +256,8 @@
    <widget class="QLabel" name="lblLb">
     <property name="geometry">
      <rect>
-      <x>210</x>
-      <y>190</y>
+      <x>200</x>
+      <y>260</y>
       <width>61</width>
       <height>16</height>
      </rect>
@@ -272,8 +272,8 @@
    <widget class="QLabel" name="lblKgStd">
     <property name="geometry">
      <rect>
-      <x>310</x>
-      <y>190</y>
+      <x>300</x>
+      <y>260</y>
       <width>61</width>
       <height>16</height>
      </rect>
@@ -288,7 +288,7 @@
    <widget class="QLabel" name="lblSampleRate">
     <property name="geometry">
      <rect>
-      <x>400</x>
+      <x>440</x>
       <y>20</y>
       <width>81</width>
       <height>20</height>
@@ -304,10 +304,10 @@
    <widget class="QLCDNumber" name="outSpeedFps">
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>130</y>
+      <x>60</x>
+      <y>140</y>
       <width>81</width>
-      <height>31</height>
+      <height>21</height>
      </rect>
     </property>
     <property name="digitCount">
@@ -320,7 +320,7 @@
    <widget class="QLCDNumber" name="outSampleRate">
     <property name="geometry">
      <rect>
-      <x>490</x>
+      <x>530</x>
       <y>10</y>
       <width>41</width>
       <height>31</height>
@@ -336,8 +336,8 @@
    <widget class="QLabel" name="lblAoA">
     <property name="geometry">
      <rect>
-      <x>150</x>
-      <y>90</y>
+      <x>30</x>
+      <y>190</y>
       <width>41</width>
       <height>20</height>
      </rect>
@@ -352,8 +352,8 @@
    <widget class="QLCDNumber" name="outAoaDeg">
     <property name="geometry">
      <rect>
-      <x>200</x>
-      <y>90</y>
+      <x>80</x>
+      <y>190</y>
       <width>61</width>
       <height>31</height>
      </rect>
@@ -368,8 +368,8 @@
    <widget class="QLabel" name="lblDeg">
     <property name="geometry">
      <rect>
-      <x>270</x>
-      <y>100</y>
+      <x>150</x>
+      <y>200</y>
       <width>31</width>
       <height>16</height>
      </rect>
@@ -381,8 +381,8 @@
    <widget class="QLabel" name="lblPower">
     <property name="geometry">
      <rect>
-      <x>330</x>
-      <y>90</y>
+      <x>400</x>
+      <y>190</y>
       <width>41</width>
       <height>20</height>
      </rect>
@@ -397,8 +397,8 @@
    <widget class="QLCDNumber" name="outPower">
     <property name="geometry">
      <rect>
-      <x>380</x>
-      <y>90</y>
+      <x>450</x>
+      <y>190</y>
       <width>71</width>
       <height>31</height>
      </rect>
@@ -413,8 +413,8 @@
    <widget class="QLabel" name="lblWatts">
     <property name="geometry">
      <rect>
-      <x>460</x>
-      <y>100</y>
+      <x>530</x>
+      <y>200</y>
       <width>16</width>
       <height>16</height>
      </rect>
@@ -426,8 +426,8 @@
    <widget class="QLCDNumber" name="outAnemometerMPH">
     <property name="geometry">
      <rect>
-      <x>430</x>
-      <y>140</y>
+      <x>440</x>
+      <y>100</y>
       <width>81</width>
       <height>31</height>
      </rect>
@@ -442,8 +442,8 @@
    <widget class="QLabel" name="lblAnemometer">
     <property name="geometry">
      <rect>
-      <x>340</x>
-      <y>140</y>
+      <x>350</x>
+      <y>100</y>
       <width>91</width>
       <height>20</height>
      </rect>
@@ -458,8 +458,8 @@
    <widget class="QLabel" name="lblFtPerSec_2">
     <property name="geometry">
      <rect>
-      <x>520</x>
-      <y>190</y>
+      <x>530</x>
+      <y>140</y>
       <width>41</width>
       <height>16</height>
      </rect>
@@ -471,10 +471,10 @@
    <widget class="QLCDNumber" name="outAnemometerFps">
     <property name="geometry">
      <rect>
-      <x>420</x>
-      <y>180</y>
+      <x>430</x>
+      <y>140</y>
       <width>91</width>
-      <height>31</height>
+      <height>21</height>
      </rect>
     </property>
     <property name="digitCount">
@@ -487,8 +487,8 @@
    <widget class="QLabel" name="lblMPH_2">
     <property name="geometry">
      <rect>
-      <x>520</x>
-      <y>150</y>
+      <x>530</x>
+      <y>110</y>
       <width>31</width>
       <height>16</height>
      </rect>
@@ -500,17 +500,62 @@
    <widget class="QPushButton" name="btnAoAZero">
     <property name="geometry">
      <rect>
-      <x>190</x>
-      <y>130</y>
+      <x>180</x>
+      <y>190</y>
       <width>111</width>
       <height>32</height>
      </rect>
     </property>
-    <property name="toolTipDuration">
-     <number>4</number>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
     </property>
     <property name="text">
      <string>Set AOA Zero</string>
+    </property>
+    <property name="toolTipDuration" stdset="0">
+     <number>4</number>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblPerSec">
+    <property name="geometry">
+     <rect>
+      <x>570</x>
+      <y>20</y>
+      <width>16</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Lucida Grande</family>
+      <pointsize>13</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>/S</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnAirspeedZero">
+    <property name="geometry">
+     <rect>
+      <x>190</x>
+      <y>100</y>
+      <width>111</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Set Airspeed Zero</string>
+    </property>
+    <property name="toolTipDuration" stdset="0">
+     <number>4</number>
     </property>
    </widget>
    <zorder>outAnemometerFps</zorder>
@@ -545,6 +590,8 @@
    <zorder>lblFtPerSec_2</zorder>
    <zorder>lblMPH_2</zorder>
    <zorder>btnAoAZero</zorder>
+   <zorder>lblPerSec</zorder>
+   <zorder>btnAirspeedZero</zorder>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
