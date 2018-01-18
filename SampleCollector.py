@@ -64,6 +64,8 @@ class SampleCollector(QThread):
         self.airspeedLowerLimit = float(config.getItem("Airspeed",
                                                        "lowerlimit"))
 
+        self.airspeedCountTare = float(config.getItem("Airspeed",
+                                                          "counttare"))
         self.airspeedZero = float(config.getItem("Airspeed", "zero"))
         self.airspeedSlope = float(config.getItem("Airspeed", "slope"))
                   
@@ -123,12 +125,12 @@ class SampleCollector(QThread):
         # pitchMomentFilter = KalmanFilter(150e-06, 1.5e-03)
         # dragFilter = KalmanFilter(150e-06, 1.5e-03)
         
-        liftLeftFilter = RollingAverageFilter()
-        liftCenterFilter = RollingAverageFilter()
-        liftRightFilter = RollingAverageFilter()
-        totalLiftFilter = RollingAverageFilter()
-        pitchMomentFilter = RollingAverageFilter()
-        dragFilter = RollingAverageFilter()
+        liftLeftFilter = RollingAverageFilter(10)
+        liftCenterFilter = RollingAverageFilter(10)
+        liftRightFilter = RollingAverageFilter(10)
+        totalLiftFilter = RollingAverageFilter(10)
+        pitchMomentFilter = RollingAverageFilter(10)
+        dragFilter = RollingAverageFilter(10)
         aoa = 0.0
         drag = 0.0
         
@@ -172,7 +174,7 @@ class SampleCollector(QThread):
 
             # Crunch the total lift and pitching moments
             totalLift = liftLeft + liftCenter + liftRight
-            pitchMoment = (totalLift * 5.63) + \
+            pitchMoment = (liftCenter * 5.63) + \
                             (liftLeft + liftRight) * 1.44
 
             # Scale the drag value and remove the lift component
@@ -191,9 +193,15 @@ class SampleCollector(QThread):
             fPitchMomentStdDev = sqrt(pitchMomentFilter.get_variance())
             
             # Compute actual airspeed
-            airspeed = latestSample.airspeed
-            airspeed = airspeed * self.airspeedSlope + self.airspeedZero
-            airspeed = sqrt((airspeed * 144.0 * 2.0) / (0.952 * 0.002378)) * 0.682
+            asCounts = latestSample.airspeed
+            asPressure = (asCounts - self.airspeedCountTare) * \
+                         self.airspeedSlope - self.airspeedZero
+            try:
+                airspeed = sqrt((asPressure * 144.0 * 2.0) / 0.002378) * 0.682
+            except ValueError:
+                # airspeedPressure went negative due to rounding errors
+                airspeed = 0.0
+                
             if (airspeed < self.airspeedLowerLimit):
                 # Think of this as a high-pass brickwall filter
                 airspeed = 0.0
