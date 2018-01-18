@@ -102,12 +102,16 @@ class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
     def setAirspeed(self, speed):
         speed = float('%.1f' % speed)
         self.outSpeedMPH.display(str(speed))
-        self.outSpeedFps.display(str(speed * 5280 / (60 * 60)))
+        speed = speed * 5280.0 / 3600.0
+        speed = float('%.1f' % speed)
+        self.outSpeedFps.display(str(speed))
 
     def setAnenometer(self, speed):
         speed = float('%.1f' % speed)
         self.outAnemometerMPH.display(str(speed))
-        self.outAnemometerFps.display(str(speed * 5280 / (60 * 60)))
+        speed = speed * 5280.0 / 3600.0
+        speed = float('%.1f' % speed)
+        self.outAnemometerFps.display(str(speed))
 
     def setLift(self, lift, stddev):
         lift = float('%.3f' % lift)

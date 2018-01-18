@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>602</width>
-    <height>440</height>
+    <height>463</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -23,11 +23,11 @@
       <height>32</height>
      </rect>
     </property>
+    <property name="toolTipDuration">
+     <number>4</number>
+    </property>
     <property name="text">
      <string>Set Load Tare</string>
-    </property>
-    <property name="toolTipDuration" stdset="0">
-     <number>4</number>
     </property>
    </widget>
    <widget class="QLineEdit" name="inpRunName">
@@ -500,7 +500,7 @@
    <widget class="QPushButton" name="btnAoAZero">
     <property name="geometry">
      <rect>
-      <x>180</x>
+      <x>190</x>
       <y>190</y>
       <width>111</width>
       <height>32</height>
@@ -511,11 +511,11 @@
       <pointsize>10</pointsize>
      </font>
     </property>
+    <property name="toolTipDuration">
+     <number>4</number>
+    </property>
     <property name="text">
      <string>Set AOA Zero</string>
-    </property>
-    <property name="toolTipDuration" stdset="0">
-     <number>4</number>
     </property>
    </widget>
    <widget class="QLabel" name="lblPerSec">
@@ -551,11 +551,11 @@
       <pointsize>10</pointsize>
      </font>
     </property>
+    <property name="toolTipDuration">
+     <number>4</number>
+    </property>
     <property name="text">
      <string>Set Airspeed Zero</string>
-    </property>
-    <property name="toolTipDuration" stdset="0">
-     <number>4</number>
     </property>
    </widget>
    <zorder>outAnemometerFps</zorder>
