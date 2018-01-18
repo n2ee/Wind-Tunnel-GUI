@@ -12,7 +12,7 @@ from pathlib import Path
 
 from queue import Queue
 from PyQt5 import  QtCore, QtWidgets
-from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import QTableWidgetItem
 
 import Tunnel_Model
@@ -26,7 +26,7 @@ from LiveGraph import LiveGraph
 class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
              
     def __init__(self):
-        super(self.__class__, self).__init__()
+        super().__init__()
         self.setupUi(self)
 
         self.config = TunnelConfig()
