@@ -72,12 +72,21 @@ class TunnelPersist():
 if __name__ == "__main__":
     tunnelPersist = TunnelPersist()
     
-    aoaZero = tunnelPersist.getItem("AoA", "AoAZero")
+    aoaZero = tunnelPersist.getItem("AoA", "Zero")
     if aoaZero == None:
         aoaZero = 0.0
     else:
         aoaZero = float(aoaZero)
-        
+
+    airspeedZero = tunnelPersist.getItem("Airspeed", "Zero")
+    if airspeedZero == None:
+        airspeedZero = 0.0
+    else:
+        airspeedZero = float(airspeedZero)
+
     print("aoaZero = %f" % aoaZero)
+    print("airspeedZero = %f" % airspeedZero)
     aoaZero += 1.1
-    tunnelPersist.setItem("AoA", "AoAZero", str(aoaZero))
+    airspeedZero += 2.2
+    tunnelPersist.setItem("AoA", "Zero", str(aoaZero))
+    tunnelPersist.setItem("Airspeed", "Zero", str(airspeedZero))
