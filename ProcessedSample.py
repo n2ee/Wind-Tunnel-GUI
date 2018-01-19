@@ -10,7 +10,7 @@ import datetime
 class ProcessedSample(object):
 
     def __init__(self, volts = 0.0, amps = 0.0, watts = 0.0,
-                 aoa = 0.0, rpm = 0, airspeed = 0.0, hotwire = 0.0, 
+                 aoa = 0.0,airspeed = 0.0, hotwire = 0.0, 
                  liftLeft = 0.0, liftCenter = 0.0, liftRight = 0.0, 
                  totalLift = 0.0, totalLiftStdDev = 0.0, 
                  drag = 0.0, dragStdDev = 0.0, pitchmoment = 0.0,
@@ -21,7 +21,6 @@ class ProcessedSample(object):
         self.amps = amps
         self.watts = watts
         self.aoa = aoa
-        self.rpm = rpm
         self.airspeed = airspeed
         self.hotwire = hotwire
         self.liftLeft = liftLeft
@@ -42,24 +41,24 @@ class ProcessedSample(object):
     """
     @staticmethod
     def header():
-        return "Volts, Amps, Watts, AoA Deg, RPM, Airspeed MPH, " \
+        return "Volts, Amps, Watts, AoA Deg, Airspeed MPH, " \
                "Hotwire MPH, LiftLeft Kg, LiftCenter Kg, LiftRight Kg, " \
                "TotalLift Kg, TotalLiftStdDev, " \
                "Drag Kg, DragStdDev, PitchMoment Kg-in, PitchMomentStdDev, " \
                "Timestamp"
                
     def __repr__(self):
-        return "%f, %f, %f, %f, %d, %f, %f, " \
+        return "%f, %f, %f, %f, %f, %f, " \
                 "%f, %f, %f, %f, %f, " \
                 "%f, %f, %f, %f, %s" % \
-            (self.volts, self.amps, self.watts, self.aoa, self.rpm, self.airspeed,
+            (self.volts, self.amps, self.watts, self.aoa, self.airspeed,
              self.hotwire, self.liftLeft, self.liftCenter, self.liftRight, 
              self.totalLift, self.totalLiftStdDev, self.drag, 
              self.dragStdDev, self.pitchMoment, self.pitchMomentStdDev, 
              self.timestamp)        
         
 if __name__ == "__main__":
-    testSample = [ProcessedSample(i / 10.0, i / 10.0, i / 10.0, i / 10.0, i, i/ 10.0, \
+    testSample = [ProcessedSample(i / 10.0, i / 10.0, i / 10.0, i / 10.0, i/ 10.0, \
                                   i/ 10.0, i / 10.0, i / 10.0, i / 10.0, \
                                   i / 10.0, i / 10.0, i / 10.0, i / 10.0, \
                                   i / 10.0, i / 10.0, i) \
