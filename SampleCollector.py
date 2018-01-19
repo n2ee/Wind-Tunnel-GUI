@@ -122,12 +122,7 @@ class SampleCollector(QThread):
         # This method runs as its own thread, catching SensorSamples,
         # updating the GUI, processing data, and tossing it into a file
         # when asked to.
-        
-        # KalmanFilters still need tuning.
-        # totalLiftFilter = KalmanFilter(150e-06, 1.5e-03)
-        # pitchMomentFilter = KalmanFilter(150e-06, 1.5e-03)
-        # dragFilter = KalmanFilter(150e-06, 1.5e-03)
-        
+              
         liftLeftFilter = RollingAverageFilter(10)
         liftCenterFilter = RollingAverageFilter(10)
         liftRightFilter = RollingAverageFilter(10)
@@ -160,9 +155,6 @@ class SampleCollector(QThread):
                 self.persist.setItem("Airspeed", "Zero", 
                                      str(self.airspeedZero))               
                 
-            # Get the AoA
-            rawAoA = latestSample.aoa - self.aoaTare
-
             # Get the latest lift & drag, adjust for tare
             rawLiftLeft = latestSample.liftLeft - self.leftLoadTare
             rawLiftCenter = latestSample.liftCenter - self.centerLoadTare
@@ -173,9 +165,6 @@ class SampleCollector(QThread):
             liftLeft = rawLiftLeft * self.liftLeftScaling
             liftCenter = rawLiftCenter * self.liftCenterScaling
             liftRight = rawLiftRight * self.liftRightScaling
-            
-            aoa = rawAoA * self.aoaSlope
-
             volts = latestSample.volts * self.voltsSlope + self.voltsZero
             # Because of the A/D resolution and the small values of deltaVolts,
             # we may need to filter amps to smooth out the appearance on the
@@ -187,15 +176,18 @@ class SampleCollector(QThread):
             totalLift = liftLeft + liftCenter + liftRight
             pitchMoment = (liftCenter * 5.63) + \
                             (liftLeft + liftRight) * 1.44
+            
+            # Get the AoA
+            rawAoA = latestSample.aoa - self.aoaTare
+            aoa = rawAoA * self.aoaSlope
 
             # Scale the drag value and remove the lift component
             drag = rawDrag * self.dragScaling
             drag = drag - (totalLift * sin(radians(aoa + self.aoaZero)))
-
             
             # Compute actual airspeed
             asCounts = latestSample.airspeed
-            asPressure = (asCounts - self.airspeedZero) / 394.09
+            asPressure = (asCounts - self.airspeedZero) / 1379.3
             try:
                 airspeed = sqrt((asPressure * 144.0 * 2.0) / 0.002378) * 0.682
             except ValueError:
