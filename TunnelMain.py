@@ -42,6 +42,9 @@ class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
         self.btnLoadTare.clicked.connect(self.loadTare)
         self.btnSaveResults.clicked.connect(self.saveResults)
 
+        # Start with tare buttons disabled
+        self.btnAoAZero.setDisabled(True)
+        
         self.sensorRdr = None
         self.sampleCollector = None
         self.savingResults = False
@@ -158,6 +161,13 @@ class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
         
     @pyqtSlot(ProcessedSample)
     def refreshWindow(self, currentData):
+        
+        # Protect wing error from being changed if tunnel is running
+        if currentData.airspeed > 15.0:
+            self.btnAoAZero.setDisabled(True)
+        elif currentData.airspeed < 10.0:
+            self.btnAoAZero.setEnabled(True)
+        
         self.setPower(currentData.volts * currentData.amps)
         self.setAoa(currentData.aoa)
         self.setAirspeed(currentData.airspeed)
