@@ -108,7 +108,7 @@ class SampleCollector(QThread):
         self.updateLoadTare = True
 
     def setAoAZero(self):
-        self.updateWingError = True
+        self.updateAoAWingError = True
 
     def setAirspeedZero(self):
         self.updateAirspeedZero = True
@@ -145,8 +145,8 @@ class SampleCollector(QThread):
                 self.rightLoadTare = latestSample.liftRight
                 self.dragTare = latestSample.drag
 
-            if (self.updateWingError):
-                self.updateWingError = False
+            if (self.updateAoAWingError):
+                self.updateAoAWingError = False
                 self.aoaWingError = latestSample.aoa
                 self.persist.setItem("AoA", "WingError", str(self.aoaWingError))               
                 
@@ -223,7 +223,6 @@ class SampleCollector(QThread):
                                               amps,
                                               (volts * amps),
                                               aoa,
-                                              latestSample.rpm,
                                               fAirspeed,
                                               fHotwire,
                                               fLiftLeft,
