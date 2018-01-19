@@ -14,7 +14,6 @@ import os
 from pathlib import Path
 from math import radians, sin, sqrt
 
-from PyQt5 import QtCore
 from PyQt5.QtCore import QThread, pyqtSignal
 
 from TunnelConfig import TunnelConfig
@@ -37,6 +36,7 @@ class SampleCollector(QThread):
     updateAoAWingError = False
     airspeedZero = 0.0
     updateAirspeedZero = False
+    dumpInterval = 0
     persist = TunnelPersist()
 
     updateWindow = pyqtSignal('PyQt_PyObject')
@@ -115,10 +115,14 @@ class SampleCollector(QThread):
 
     def dumpData(self, volts, amps, airspeed, hotwire, aoa, drag, liftLeft, liftCenter, liftRight, 
                  totalLift):
-        print("V=%f, A=%f, as=%f, hw=%f, aoa=%f, drag=%f, LL=%f, LC=%f, LR=%f, TL=%f" \
-              % (volts, amps, airspeed, hotwire, aoa, drag,
-                 liftLeft, liftCenter, liftRight, totalLift))
-    
+        if self.dumpInterval == 10:
+            self.dumpInterval = 0
+            print("V=%f, A=%f, as=%f, hw=%f, aoa=%f, drag=%f, LL=%f, LC=%f, LR=%f, TL=%f" \
+                  % (volts, amps, airspeed, hotwire, aoa, drag,
+                     liftLeft, liftCenter, liftRight, totalLift))
+        else:
+            self.dumpInterval += 1
+            
     def run(self):
         # This method runs as its own thread, catching SensorSamples,
         # updating the GUI, processing data, and tossing it into a file
