@@ -6,7 +6,9 @@ Created on Wed Oct 25 17:13:08 2017
 @author: markm
 """
 
-import sys, re, unicodedata
+import sys
+import re
+import unicodedata
 
 from pathlib import Path
 
@@ -24,7 +26,17 @@ from ProcessedSample import ProcessedSample
 from LiveGraph import LiveGraph
 
 class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
-             
+
+    sensorRdr = None
+    sampleCollector = None
+    savingResults = False
+    
+    enableGraphs = False
+    liftGraph = None
+    dragGraph = None
+    pitchMomentGraph = None
+    airspeedGraph = None
+
     def __init__(self):
         super().__init__()
         self.setupUi(self)
@@ -32,7 +44,7 @@ class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
         self.config = TunnelConfig()
 
         # Update displayed sample rate
-        sampleRate = self.config.getItem("General", "samplerate")      
+        sampleRate = self.config.getItem("General", "samplerate")
 
         self.outSampleRate.display(sampleRate)
 
@@ -44,16 +56,7 @@ class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
 
         # Start with tare buttons disabled
         self.btnAoAZero.setDisabled(True)
-        
-        self.sensorRdr = None
-        self.sampleCollector = None
-        self.savingResults = False
-        self.enableGraphs = False
-        self.liftGraph = None
-        self.dragGraph = None
-        self.pitchMomentGraph = None
-        self.airspeedGraph = None
-        
+
     def aoaZero(self):
         self.sampleCollector.setAoAZero()
 
@@ -75,23 +78,23 @@ class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
         value = str(re.sub("[^\w.\s-]", "", value).strip().lower())
         value = str(re.sub("[-\s]+", "-", value))
         return value
-    
+
     def saveResults(self):
         fname = self.slugify(str(self.inpRunName.text()))
         if (fname == ""):
             fname = self.config.getItem("General", "DefaultFileName")
-            
+
         fname = Path(fname)
         destDirname = self.config.getItem("General", "DataDestinationDir")
-        
-        if (destDirname == None):
+
+        if (destDirname is None):
             destDirname = Path.cwd()
         else:
-           Path(destDirname).mkdir(parents = True, exist_ok = True) 
-        
+            Path(destDirname).mkdir(parents = True, exist_ok = True)
+
         fname = destDirname / fname
         print ("Save Results clicked: %s" % fname)
-        self.sampleCollector.doSave(fname, str(self.inpRunName.text()), 
+        self.sampleCollector.doSave(fname, str(self.inpRunName.text()),
                                     str(self.inpConfiguration.text()))
 
     def startReadingSensors(self):
@@ -117,39 +120,39 @@ class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
         self.outAnemometerFps.display(str(speed))
 
     def setLift(self, lift, stddev):
-        lift = float('%.3f' % lift)
-        stddev = float('%.3f' % stddev)
+        lift = float('%.1f' % lift)
+        stddev = float('%.1f' % stddev)
         itemKg = QTableWidgetItem()
         itemKg.setData(Qt.DisplayRole, lift)
         self.tblLiftDragMoment.setItem(0, 0, itemKg)
         itemLb = QTableWidgetItem()
-        itemLb.setData(Qt.DisplayRole, float('%.3f' % (lift * 2.2046)))
+        itemLb.setData(Qt.DisplayRole, float('%.1f' % (lift * 2.2046)))
         self.tblLiftDragMoment.setItem(0, 1, itemLb)
         fItemKg = QTableWidgetItem()
         fItemKg.setData(Qt.DisplayRole, stddev)
         self.tblLiftDragMoment.setItem(0, 2, fItemKg)
 
     def setDrag(self, drag, stddev):
-        drag = float('%.3f' % drag)
-        stddev = float('%.3f' % stddev)
+        drag = float('%.1f' % drag)
+        stddev = float('%.1f' % stddev)
         itemKg = QTableWidgetItem()
         itemKg.setData(Qt.DisplayRole, drag)
         self.tblLiftDragMoment.setItem(1, 0, itemKg)
         itemLb = QTableWidgetItem()
-        itemLb.setData(Qt.DisplayRole, float('%.3f' % (drag * 2.2046)))
+        itemLb.setData(Qt.DisplayRole, float('%.1f' % (drag * 2.2046)))
         self.tblLiftDragMoment.setItem(1, 1, itemLb)
         fItemKg = QTableWidgetItem()
         fItemKg.setData(Qt.DisplayRole, stddev)
         self.tblLiftDragMoment.setItem(1, 2, fItemKg)
 
     def setMoment(self, moment, stddev):
-        moment = float('%.3f' % moment)
-        stddev = float('%.3f' % stddev)
+        moment = float('%.1f' % moment)
+        stddev = float('%.1f' % stddev)
         itemKgM = QTableWidgetItem()
         itemKgM.setData(Qt.DisplayRole, moment)
         self.tblLiftDragMoment.setItem(2, 0, itemKgM)
         itemLbFt = QTableWidgetItem()
-        itemLbFt.setData(Qt.DisplayRole, float('%.3f' % (moment * 8.8507)))
+        itemLbFt.setData(Qt.DisplayRole, float('%.1f' % (moment * 8.8507)))
         self.tblLiftDragMoment.setItem(2, 1, itemLbFt)
         fItemKgM = QTableWidgetItem()
         fItemKgM.setData(Qt.DisplayRole, stddev)
@@ -158,32 +161,32 @@ class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
     def setPower(self, power):
         power = float('%.1f' % power)
         self.outPower.display(str(power))
-        
+
     @pyqtSlot(ProcessedSample)
     def refreshWindow(self, currentData):
-        
+
         # Protect wing error from being changed if tunnel is running
         if currentData.airspeed > 15.0:
             self.btnAoAZero.setDisabled(True)
         elif currentData.airspeed < 10.0:
             self.btnAoAZero.setEnabled(True)
-        
+
         self.setPower(currentData.volts * currentData.amps)
         self.setAoa(currentData.aoa)
         self.setAirspeed(currentData.airspeed)
         self.setAnenometer(currentData.hotwire)
-        
+
         self.tblLiftDragMoment.setUpdatesEnabled(False)
         self.setLift(currentData.totalLift, currentData.totalLiftStdDev)
         self.setDrag(currentData.drag, currentData.dragStdDev)
-        self.setMoment(currentData.pitchMoment, 
+        self.setMoment(currentData.pitchMoment,
                        currentData.pitchMomentStdDev)
         self.tblLiftDragMoment.setUpdatesEnabled(True)
 
-        self.updateGraphs(currentData.totalLift, currentData.drag, 
+        self.updateGraphs(currentData.totalLift, currentData.drag,
                           currentData.pitchMoment, currentData.airspeed)
-            
-  
+
+
     def startSensorReader(self, tunnelWindow, tunnelDataQ):
         useSimulatedData = self.config.getItem("General",
                                                "UseSimulatedData")
@@ -201,7 +204,7 @@ class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
 
     def stopSensorReader(self):
         self.sensorRdr.terminate()
-        
+
     def startSampleCollector(self, tunnelDataQ):
         self.sampleCollector = SampleCollector(tunnelDataQ)
         self.sampleCollector.updateWindow.connect(self.refreshWindow)
@@ -210,7 +213,7 @@ class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
 
     def stopSampleCollector(self):
         self.sampleCollector.terminate()
-        
+
     def startGraphs(self):
 
         enableGraphs = self.config.getItem("General", "EnableGraphs")
@@ -263,7 +266,7 @@ def main():
     tg.startSampleCollector(tdQ)
 
     app.exec_()
-    
+
     tg.stopSensorReader()
     tg.stopSampleCollector()
 
