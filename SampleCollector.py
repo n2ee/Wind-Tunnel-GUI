@@ -5,7 +5,7 @@ Created on Sun Nov  5 21:48:24 2017
 
 @author: markm
 
-Listens on stdin|designated pipe and collects samples arriving there. Feeds
+Listens on the dataQ and collects samples arriving there. Feeds
 samples to the display UI and/or writes to a file.
 
 
@@ -38,9 +38,10 @@ class SampleCollector(QThread):
     updateAirspeedZero = False
     dumpInterval = 0
     persist = TunnelPersist()
+    runConfigComment = ""
 
     updateWindow = pyqtSignal('PyQt_PyObject')
-    
+
     def __init__(self, dQ):
         QThread.__init__(self)
         self.dataQ = dQ
@@ -55,15 +56,15 @@ class SampleCollector(QThread):
 
         self.aoaSlope = float(config.getItem("AoA", "slope"))
         self.aoaPlatformTare = float(config.getItem("AoA", "platformtare"))
-        
-        
+
+
         self.voltsSlope = float(config.getItem("Volts", "slope"))
         self.voltsZero = float(config.getItem("Volts", "zero"))
 
         self.ampsSlope = float(config.getItem("Amps", "slope"))
         self.ampsZero = float(config.getItem("Amps", "zero"))
         self.shuntOhms = float(config.getItem("Amps", "shunt"))
-        
+
         self.airspeedLowerLimit = float(config.getItem("Airspeed",
                                                        "lowerlimit"))
 
@@ -72,7 +73,7 @@ class SampleCollector(QThread):
 
         self.hotwireZero = float(config.getItem("Hotwire", "zero"))
         self.hotwireSlope = float(config.getItem("Hotwire", "slope"))
-             
+
         aoaWingError = self.persist.getItem("AoA", "wingerror")
         if aoaWingError == None:
             self.aoaWingError = 0.0
@@ -85,19 +86,20 @@ class SampleCollector(QThread):
         else:
             self.airspeedZero = float(airspeedZero)
 
+
     def __del__(self):
         self.wait()
 
     def doSave(self, destFile = Path(os.devnull), runName = "", config = ""):
         try:
-            self.config = ', "' + runName + '", "' + config + '"\n'
-            
+            self.runConfigComment = ', "' + runName + '", "' + config + '"\n'
+
             if not destFile.is_file():
                 self.f = open(destFile, "w")
                 self.f.write(str(ProcessedSample.header()))
                 self.f.write(", run name, configuration\n")
                 self.f.close()
-                
+
             self.f = open(destFile, "a")
             self.saveSamples = True
         except IOError:
@@ -113,21 +115,23 @@ class SampleCollector(QThread):
     def setAirspeedZero(self):
         self.updateAirspeedZero = True
 
-    def dumpData(self, volts, amps, airspeed, hotwire, aoa, drag, liftLeft, liftCenter, liftRight, 
-                 totalLift):
+    def dumpData(self, processedSample):
         if self.dumpInterval == 10:
             self.dumpInterval = 0
             print("V=%f, A=%f, as=%f, hw=%f, aoa=%f, drag=%f, LL=%f, LC=%f, LR=%f, TL=%f" \
-                  % (volts, amps, airspeed, hotwire, aoa, drag,
-                     liftLeft, liftCenter, liftRight, totalLift))
+                  % (processedSample.volts, processedSample.amps,
+                     processedSample.airspeed, processedSample.hotwire,
+                     processedSample.aoa, processedSample.drag,
+                     processedSample.liftLeft, processedSample.liftCenter,
+                     processedSample.liftRight, processedSample.totalLift))
         else:
             self.dumpInterval += 1
-            
+
     def run(self):
         # This method runs as its own thread, catching SensorSamples,
         # updating the GUI, processing data, and tossing it into a file
         # when asked to.
-              
+
         liftLeftFilter = RollingAverageFilter(10)
         liftCenterFilter = RollingAverageFilter(10)
         liftRightFilter = RollingAverageFilter(10)
@@ -138,7 +142,7 @@ class SampleCollector(QThread):
         hotwireFilter = RollingAverageFilter(10)
         aoa = 0.0
         drag = 0.0
-        
+
         while (True):
             latestSample = self.dataQ.get(True)
 
@@ -152,14 +156,14 @@ class SampleCollector(QThread):
             if (self.updateAoAWingError):
                 self.updateAoAWingError = False
                 self.aoaWingError = latestSample.aoa
-                self.persist.setItem("AoA", "WingError", str(self.aoaWingError))               
-                
+                self.persist.setItem("AoA", "WingError", str(self.aoaWingError))
+
             if (self.updateAirspeedZero):
                 self.updateAirspeedZero = False
                 self.airspeedZero = latestSample.airspeed
-                self.persist.setItem("Airspeed", "Zero", 
-                                     str(self.airspeedZero))               
-                
+                self.persist.setItem("Airspeed", "Zero",
+                                     str(self.airspeedZero))
+
             # Get the latest lift & drag, adjust for tare
             rawLiftLeft = latestSample.liftLeft - self.leftLoadTare
             rawLiftCenter = latestSample.liftCenter - self.centerLoadTare
@@ -181,7 +185,7 @@ class SampleCollector(QThread):
             totalLift = liftLeft + liftCenter + liftRight
             pitchMoment = (liftCenter * 5.63) + \
                             (liftLeft + liftRight) * 1.44
-            
+
             # Get the AoA
             aoa = ((latestSample.aoa - self.aoaWingError) * self.aoaSlope) + \
                    self.aoaPlatformTare
@@ -189,7 +193,7 @@ class SampleCollector(QThread):
             # Scale the drag value and remove the lift component
             drag = rawDrag * self.dragScaling
             drag = drag - (totalLift * sin(radians(aoa)))
-            
+
             # Compute actual airspeed
             asCounts = latestSample.airspeed
             asPressure = (asCounts - self.airspeedZero) / 1379.3
@@ -198,23 +202,23 @@ class SampleCollector(QThread):
             except ValueError:
                 # airspeedPressure went negative due to rounding errors
                 airspeed = 0.0
-                
+
             if (airspeed < self.airspeedLowerLimit):
                 # Think of this as a high-pass brickwall filter
                 airspeed = 0.0
-            
+
             # Compute hotwire speed
             hotwire = latestSample.hotwire
             hotwire = hotwire * self.hotwireSlope + self.hotwireZero
             if (hotwire < self.airspeedLowerLimit):
                 hotwire = 0.0
 
-            
+
             # Generate filtered values
             fLiftLeft = liftLeftFilter.get_filtered_value(liftLeft)
             fLiftCenter = liftCenterFilter.get_filtered_value(liftCenter)
             fLiftRight = liftRightFilter.get_filtered_value(liftRight)
-            fDrag = dragFilter.get_filtered_value(drag)         
+            fDrag = dragFilter.get_filtered_value(drag)
             fTotalLift = totalLiftFilter.get_filtered_value(totalLift)
             fPitchMoment = pitchMomentFilter.get_filtered_value(pitchMoment)
             fTotalLiftStdDev = sqrt(totalLiftFilter.get_variance())
@@ -222,7 +226,7 @@ class SampleCollector(QThread):
             fPitchMomentStdDev = sqrt(pitchMomentFilter.get_variance())
             fAirspeed = airspeedFilter.get_filtered_value(airspeed)
             fHotwire = hotwireFilter.get_filtered_value(hotwire)
-            
+
             processedSample = ProcessedSample(volts,
                                               amps,
                                               (volts * amps),
@@ -244,14 +248,12 @@ class SampleCollector(QThread):
                 self.saveSamples = False
                 # f is opened in doSave(), and remains open until
                 # the requested samples are written here.
-                self.f.write(str(processedSample) + self.config)
+                self.f.write(str(processedSample) + self.runConfigComment)
                 self.f.close()
-                
+
             self.updateWindow.emit(processedSample)
 
-            self.dumpData(volts, amps, airspeed, hotwire, aoa, drag, liftLeft,
-                          liftCenter, liftRight, totalLift)
-            
+            self.dumpData(processedSample)
 
 
 
