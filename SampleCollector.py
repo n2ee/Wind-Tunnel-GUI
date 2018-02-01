@@ -155,7 +155,7 @@ class SampleCollector(QThread):
 
             if (self.updateAoAWingError):
                 self.updateAoAWingError = False
-                self.aoaWingError = latestSample.aoa
+                self.aoaWingError = latestSample.aoa * self.aoaSlope
                 self.persist.setItem("AoA", "WingError", str(self.aoaWingError))
 
             if (self.updateAirspeedZero):
@@ -187,8 +187,8 @@ class SampleCollector(QThread):
                             (liftLeft + liftRight) * 1.44
 
             # Get the AoA
-            aoa = ((latestSample.aoa - self.aoaWingError) * self.aoaSlope) + \
-                   self.aoaPlatformTare
+            aoa = ((latestSample.aoa  * self.aoaSlope) - \
+                   self.aoaWingError) + self.aoaPlatformTare
 
             # Scale the drag value and remove the lift component
             drag = rawDrag * self.dragScaling
