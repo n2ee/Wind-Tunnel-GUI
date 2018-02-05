@@ -12,7 +12,7 @@ samples to the display UI and/or writes to a file.
 """
 import os
 from pathlib import Path
-from math import radians, sin, sqrt
+from math import radians, cos, sin, sqrt
 
 from PyQt5.QtCore import QThread, pyqtSignal
 
@@ -55,7 +55,7 @@ class SampleCollector(QThread):
         self.dragScaling = float(config.getItem("StrainGauges", "dragscaling"))
 
         self.aoaSlope = float(config.getItem("AoA", "slope"))
-        self.aoaPlatformTare = float(config.getItem("AoA", "platformtare"))
+        self.aoaPlatformTare = int(config.getItem("AoA", "platformtare"))
 
 
         self.voltsSlope = float(config.getItem("Volts", "slope"))
@@ -76,9 +76,9 @@ class SampleCollector(QThread):
 
         aoaWingError = self.persist.getItem("AoA", "wingerror")
         if aoaWingError == None:
-            self.aoaWingError = 0.0
+            self.aoaWingError = 0
         else:
-            self.aoaWingError = float(aoaWingError)
+            self.aoaWingError = int(aoaWingError)
 
         airspeedZero = self.persist.getItem("Airspeed", "Zero")
         if airspeedZero == None:
@@ -140,7 +140,8 @@ class SampleCollector(QThread):
         dragFilter = RollingAverageFilter(10)
         airspeedFilter = RollingAverageFilter(10)
         hotwireFilter = RollingAverageFilter(10)
-        aoa = 0.0
+        wingAoA = 0.0
+        platformAoA = 0.0
         drag = 0.0
 
         while (True):
@@ -155,7 +156,7 @@ class SampleCollector(QThread):
 
             if (self.updateAoAWingError):
                 self.updateAoAWingError = False
-                self.aoaWingError = latestSample.aoa * self.aoaSlope
+                self.aoaWingError = latestSample.aoa - self.aoaPlatformTare
                 self.persist.setItem("AoA", "WingError", str(self.aoaWingError))
 
             if (self.updateAirspeedZero):
@@ -187,12 +188,15 @@ class SampleCollector(QThread):
                             (liftLeft + liftRight) * 1.44
 
             # Get the AoA
-            aoa = ((latestSample.aoa  * self.aoaSlope) - \
-                   self.aoaWingError) + self.aoaPlatformTare
+            platformAoA = (latestSample.aoa - self.aoaPlatformTare) * \
+                          self.aoaSlope
+            
+            wingAoA = (latestSample.aoa - self.aoaWingError - \
+                       self.aoaPlatformTare) * self.aoaSlope
 
             # Scale the drag value and remove the lift component
             drag = rawDrag * self.dragScaling
-            drag = drag - (totalLift * sin(radians(aoa)))
+            drag = (drag - (totalLift * sin(radians(platformAoA)))) / cos(radians(platformAoA))
 
             # Compute actual airspeed
             asCounts = latestSample.airspeed
@@ -230,7 +234,7 @@ class SampleCollector(QThread):
             processedSample = ProcessedSample(volts,
                                               amps,
                                               (volts * amps),
-                                              aoa,
+                                              wingAoA,
                                               fAirspeed,
                                               fHotwire,
                                               fLiftLeft,
