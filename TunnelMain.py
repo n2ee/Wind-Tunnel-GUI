@@ -57,6 +57,10 @@ class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
         # Start with tare buttons disabled
         self.btnAoAZero.setDisabled(True)
 
+        # Show the directory path
+        destDirname = self.config.getItem("General", "DataDestinationDir")
+        self.lblDirPath.setText(destDirname)
+       
     def aoaZero(self):
         self.sampleCollector.setAoAZero()
 
@@ -84,6 +88,10 @@ class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
         if (fname == ""):
             fname = self.config.getItem("General", "DefaultFileName")
 
+        # Append '.csh' if not already there
+        if not fname.endswith(".csv"):
+            fname += ".csv"
+            
         fname = Path(fname)
         destDirname = self.config.getItem("General", "DataDestinationDir")
 
@@ -120,39 +128,39 @@ class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
         self.outAnemometerFps.display(str(speed))
 
     def setLift(self, lift, stddev):
-        lift = float('%.1f' % lift)
-        stddev = float('%.1f' % stddev)
+        lift = float('%.2f' % lift)
+        stddev = float('%.2f' % stddev)
         itemKg = QTableWidgetItem()
         itemKg.setData(Qt.DisplayRole, lift)
         self.tblLiftDragMoment.setItem(0, 0, itemKg)
         itemLb = QTableWidgetItem()
-        itemLb.setData(Qt.DisplayRole, float('%.1f' % (lift * 2.2046)))
+        itemLb.setData(Qt.DisplayRole, float('%.2f' % (lift * 2.2046)))
         self.tblLiftDragMoment.setItem(0, 1, itemLb)
         fItemKg = QTableWidgetItem()
         fItemKg.setData(Qt.DisplayRole, stddev)
         self.tblLiftDragMoment.setItem(0, 2, fItemKg)
 
     def setDrag(self, drag, stddev):
-        drag = float('%.1f' % drag)
-        stddev = float('%.1f' % stddev)
+        drag = float('%.2f' % drag)
+        stddev = float('%.2f' % stddev)
         itemKg = QTableWidgetItem()
         itemKg.setData(Qt.DisplayRole, drag)
         self.tblLiftDragMoment.setItem(1, 0, itemKg)
         itemLb = QTableWidgetItem()
-        itemLb.setData(Qt.DisplayRole, float('%.1f' % (drag * 2.2046)))
+        itemLb.setData(Qt.DisplayRole, float('%.2f' % (drag * 2.2046)))
         self.tblLiftDragMoment.setItem(1, 1, itemLb)
         fItemKg = QTableWidgetItem()
         fItemKg.setData(Qt.DisplayRole, stddev)
         self.tblLiftDragMoment.setItem(1, 2, fItemKg)
 
     def setMoment(self, moment, stddev):
-        moment = float('%.1f' % moment)
-        stddev = float('%.1f' % stddev)
+        moment = float('%.2f' % moment)
+        stddev = float('%.2f' % stddev)
         itemKgM = QTableWidgetItem()
         itemKgM.setData(Qt.DisplayRole, moment)
         self.tblLiftDragMoment.setItem(2, 0, itemKgM)
         itemLbFt = QTableWidgetItem()
-        itemLbFt.setData(Qt.DisplayRole, float('%.1f' % (moment * 8.8507)))
+        itemLbFt.setData(Qt.DisplayRole, float('%.2f' % (moment * 8.8507)))
         self.tblLiftDragMoment.setItem(2, 1, itemLbFt)
         fItemKgM = QTableWidgetItem()
         fItemKgM.setData(Qt.DisplayRole, stddev)
