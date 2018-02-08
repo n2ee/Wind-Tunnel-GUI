@@ -6,8 +6,9 @@ Created on Wed Oct 25 17:13:08 2017
 @author: markm
 """
 
-import sys
 import re
+import sys
+import time
 import unicodedata
 
 from pathlib import Path
@@ -29,7 +30,6 @@ class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
 
     sensorRdr = None
     sampleCollector = None
-    savingResults = False
     
     enableGraphs = False
     liftGraph = None
@@ -102,9 +102,11 @@ class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
 
         fname = destDirname / fname
         print ("Save Results clicked: %s" % fname)
+
         self.sampleCollector.doSave(fname, str(self.inpRunName.text()),
                                     str(self.inpConfiguration.text()))
-
+        time.sleep(0.3)
+        
     def startReadingSensors(self):
         sampleRate = self.outSampleRate.value()
         print ("Start sampling at " + str(sampleRate) + " samples/sec")
