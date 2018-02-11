@@ -15,7 +15,7 @@ from pathlib import Path
 
 from queue import Queue
 from PyQt5 import  QtCore, QtWidgets
-from PyQt5.QtCore import Qt, pyqtSlot
+from PyQt5.QtCore import Qt, pyqtSlot, QTime
 from PyQt5.QtWidgets import QTableWidgetItem
 
 import Tunnel_Model
@@ -37,10 +37,10 @@ class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
     pitchMomentGraph = None
     airspeedGraph = None
 
-    def __init__(self):
+    def __init__(self, qApp):
         super().__init__()
+        self.qApp = qApp
         self.setupUi(self)
-
         self.config = TunnelConfig()
 
         # Update displayed sample rate
@@ -56,6 +56,10 @@ class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
 
         # Start with tare buttons disabled
         self.btnAoAZero.setDisabled(True)
+
+        # Set the Saving... text to nothing for now. When the Save button
+        # is clicked, we'll light it up for a moment.
+        self.lblSaving.setText("")
 
         # Show the directory path
         destDirname = self.config.getItem("General", "DataDestinationDir")
@@ -102,12 +106,21 @@ class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
 
         fname = destDirname / fname
         print ("Save Results clicked: %s" % fname)
-
+        
+        self.lblSaving.setText("Saving...")
+        
         self.sampleCollector.doSave(fname, str(self.inpRunName.text()),
                                     str(self.inpConfiguration.text()),
                                     str(self.inpComments.text()))
-        time.sleep(0.3)
-        
+
+        dieTime = QTime.currentTime().addSecs(1)
+        while (QTime.currentTime() < dieTime):
+            self.qApp.processEvents()
+
+        self.lblSaving.setText("")
+        self.lblSaving.repaint()
+        self.qApp.processEvents()
+
     def startReadingSensors(self):
         sampleRate = self.outSampleRate.value()
         print ("Start sampling at " + str(sampleRate) + " samples/sec")
@@ -268,7 +281,7 @@ def main():
     else:
         print('QApplication instance already exists: %s' % str(app))
 
-    tg = TunnelGui()
+    tg = TunnelGui(app)
     tg.startGraphs()
 
     tg.show()
