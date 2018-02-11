@@ -65,6 +65,7 @@ class SampleCollector(QThread):
         self.ampsZero = float(config.getItem("Amps", "zero"))
         self.shuntOhms = float(config.getItem("Amps", "shunt"))
 
+        self.airspeedSlope = float(config.getItem("Airspeed",  "slope"))
         self.airspeedLowerLimit = float(config.getItem("Airspeed",
                                                        "lowerlimit"))
 
@@ -90,14 +91,18 @@ class SampleCollector(QThread):
     def __del__(self):
         self.wait()
 
-    def doSave(self, destFile = Path(os.devnull), runName = "", config = ""):
+    def doSave(self, destFile = Path(os.devnull), runName = "", config = "",
+               comments = ""):
         try:
-            self.runConfigComment = ', "' + runName + '", "' + config + '"\n'
+            self.runConfigComment = ', "' + \
+                                    runName + '", "' + \
+                                    config + '", "' + \
+                                    comments + '"\n'
 
             if not destFile.is_file():
                 self.f = open(destFile, "w")
                 self.f.write(str(ProcessedSample.header()))
-                self.f.write(", run name, configuration\n")
+                self.f.write(", run name, configuration, comments\n")
                 self.f.close()
 
             self.f = open(destFile, "a")
@@ -202,7 +207,7 @@ class SampleCollector(QThread):
             asCounts = latestSample.airspeed
             asPressure = (asCounts - self.airspeedZero) / 1379.3
             try:
-                airspeed = sqrt((asPressure * 144.0 * 2.0) / 0.002378) * 0.682
+                airspeed = self.airspeedSlope * sqrt((asPressure * 144.0 * 2.0) / 0.002378) * 0.682
             except ValueError:
                 # airspeedPressure went negative due to rounding errors
                 airspeed = 0.0

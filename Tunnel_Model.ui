@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>600</width>
-    <height>504</height>
+    <width>601</width>
+    <height>492</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -34,7 +34,7 @@
     <property name="geometry">
      <rect>
       <x>110</x>
-      <y>60</y>
+      <y>40</y>
       <width>261</width>
       <height>21</height>
      </rect>
@@ -57,7 +57,7 @@
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>60</y>
+      <y>40</y>
       <width>71</width>
       <height>20</height>
      </rect>
@@ -73,7 +73,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>90</y>
+      <y>70</y>
       <width>91</width>
       <height>20</height>
      </rect>
@@ -89,7 +89,7 @@
     <property name="geometry">
      <rect>
       <x>110</x>
-      <y>90</y>
+      <y>70</y>
       <width>261</width>
       <height>21</height>
      </rect>
@@ -587,6 +587,38 @@
      <string>Dir Path</string>
     </property>
    </widget>
+   <widget class="QLineEdit" name="inpComments">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>110</x>
+      <y>100</y>
+      <width>471</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblComments">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>100</y>
+      <width>91</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Comments:</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
    <zorder>outAnemometerFps</zorder>
    <zorder>btnLoadTare</zorder>
    <zorder>inpRunName</zorder>
@@ -623,6 +655,8 @@
    <zorder>btnAirspeedZero</zorder>
    <zorder>lblDataDirectory</zorder>
    <zorder>lblDirPath</zorder>
+   <zorder>inpComments</zorder>
+   <zorder>lblComments</zorder>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>

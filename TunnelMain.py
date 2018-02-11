@@ -104,7 +104,8 @@ class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
         print ("Save Results clicked: %s" % fname)
 
         self.sampleCollector.doSave(fname, str(self.inpRunName.text()),
-                                    str(self.inpConfiguration.text()))
+                                    str(self.inpConfiguration.text()),
+                                    str(self.inpComments.text()))
         time.sleep(0.3)
         
     def startReadingSensors(self):
