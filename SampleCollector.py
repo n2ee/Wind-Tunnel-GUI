@@ -123,10 +123,10 @@ class SampleCollector(QThread):
     def dumpData(self, processedSample):
         if self.dumpInterval == 10:
             self.dumpInterval = 0
-            print("V=%f, A=%f, as=%f, hw=%f, aoa=%f, drag=%f, LL=%f, LC=%f, LR=%f, TL=%f" \
+            print("V=%f, A=%f, as=%f, hw=%f, platAoA=%f, aoa=%f, rawDrag=%f, drag=%f, LL=%f, LC=%f, LR=%f, TL=%f" \
                   % (processedSample.volts, processedSample.amps,
                      processedSample.airspeed, processedSample.hotwire,
-                     processedSample.aoa, processedSample.drag,
+                     self.platformAoA, processedSample.aoa, self.scaleDrag, processedSample.drag,
                      processedSample.liftLeft, processedSample.liftCenter,
                      processedSample.liftRight, processedSample.totalLift))
         else:
@@ -193,15 +193,15 @@ class SampleCollector(QThread):
                             (liftLeft + liftRight) * 1.44
 
             # Get the AoA
-            platformAoA = (latestSample.aoa - self.aoaPlatformTare) * \
+            self.platformAoA = (latestSample.aoa - self.aoaPlatformTare) * \
                           self.aoaSlope
             
             wingAoA = (latestSample.aoa - self.aoaWingError - \
                        self.aoaPlatformTare) * self.aoaSlope
 
             # Scale the drag value and remove the lift component
-            drag = rawDrag * self.dragScaling
-            drag = (drag - (totalLift * sin(radians(platformAoA)))) / cos(radians(platformAoA))
+            self.scaleDrag = rawDrag * self.dragScaling
+            drag = (self.scaleDrag - (totalLift * sin(radians(self.platformAoA)))) / cos(radians(self.platformAoA))
 
             # Compute actual airspeed
             asCounts = latestSample.airspeed
