@@ -33,9 +33,10 @@ class SampleCollector(QThread):
     dragTare = 0.0
     updateLoadTare = False
     aoaTare = 0.0 # We call this 'tare' to distinguish from the y-intercept of the raw value
-    updateAoAWingError = False
-    airspeedZero = 0.0
-    updateAirspeedZero = False
+    updateAoAWingTare = False
+    updateAoAPlatformTare = False
+    airspeedTare = 0
+    updateAirspeedTare = False
     dumpInterval = 0
     persist = TunnelPersist()
     runConfigComment = ""
@@ -55,8 +56,6 @@ class SampleCollector(QThread):
         self.dragScaling = float(config.getItem("StrainGauges", "dragscaling"))
 
         self.aoaSlope = float(config.getItem("AoA", "slope"))
-        self.aoaPlatformTare = int(config.getItem("AoA", "platformtare"))
-
 
         self.voltsSlope = float(config.getItem("Volts", "slope"))
         self.voltsZero = float(config.getItem("Volts", "zero"))
@@ -75,17 +74,23 @@ class SampleCollector(QThread):
         self.hotwireZero = float(config.getItem("Hotwire", "zero"))
         self.hotwireSlope = float(config.getItem("Hotwire", "slope"))
 
-        aoaWingError = self.persist.getItem("AoA", "wingerror")
+        aoaWingError = self.persist.getItem("AoA", "WingError")
         if aoaWingError == None:
             self.aoaWingError = 0
         else:
             self.aoaWingError = int(aoaWingError)
 
-        airspeedZero = self.persist.getItem("Airspeed", "Zero")
-        if airspeedZero == None:
-            self.airspeedZero = 0.0
+        aoaPlatformTare = self.persist.getItem("AoA", "PlatformTare")
+        if aoaPlatformTare == None:
+            self.aoaPlatformTare = 0
         else:
-            self.airspeedZero = float(airspeedZero)
+            self.aoaPlatformTare = int(aoaPlatformTare)
+
+        airspeedTare = self.persist.getItem("Airspeed", "Tare")
+        if airspeedTare == None:
+            self.airspeedTare = 0
+        else:
+            self.airspeedTare = int(airspeedTare)
 
 
     def __del__(self):
@@ -114,19 +119,44 @@ class SampleCollector(QThread):
     def setLoadTare(self):
         self.updateLoadTare = True
 
-    def setAoAZero(self):
-        self.updateAoAWingError = True
+    def setAoAWingTare(self):
+        self.updateAoAWingTare = True
 
-    def setAirspeedZero(self):
-        self.updateAirspeedZero = True
+    def setAoAPlatformTare(self):
+        self.updateAoAPlatformTare = True
+
+    def setAirspeedTare(self):
+        self.updateAirspeedTare = True
+
+    def getRunName(self):
+        runNameText = self.persist.getItem("General", "RunName")
+        if runNameText == None:
+            runNameText = ""
+        
+        return (runNameText)
+
+    def saveRunName(self, runNameText):
+        self.persist.setItem("General", "RunName", runNameText)
+            
+    def getConfiguration(self):
+        configText = self.persist.getItem("General", "Configuration")
+        if configText == None:
+             configText = ""
+             
+        return (configText)
+    
+    def saveConfiguration(self, configText):
+        self.persist.setItem("General", "Configuration", configText)
+            
 
     def dumpData(self, processedSample):
         if self.dumpInterval == 10:
             self.dumpInterval = 0
-            print("V=%f, A=%f, as=%f, hw=%f, platAoA=%f, aoa=%f, rawDrag=%f, drag=%f, LL=%f, LC=%f, LR=%f, TL=%f" \
+            print("V=%f, A=%f, as=%f, hw=%f, wingAoA=%f, platAoA=%f, totalDrag=%f, drag=%f, LL=%f, LC=%f, LR=%f, TL=%f" \
                   % (processedSample.volts, processedSample.amps,
                      processedSample.airspeed, processedSample.hotwire,
-                     self.platformAoA, processedSample.aoa, self.scaleDrag, processedSample.drag,
+                     processedSample.wingAoA, processedSample.platformAoA, 
+                     self.totalDrag, processedSample.drag,
                      processedSample.liftLeft, processedSample.liftCenter,
                      processedSample.liftRight, processedSample.totalLift))
         else:
@@ -145,8 +175,8 @@ class SampleCollector(QThread):
         dragFilter = RollingAverageFilter(10)
         airspeedFilter = RollingAverageFilter(10)
         hotwireFilter = RollingAverageFilter(10)
-        wingAoA = 0.0
-        self.platformAoA = 0.0
+        wingAoA = 0
+        platformAoA = 0
         drag = 0.0
 
         while (True):
@@ -159,22 +189,30 @@ class SampleCollector(QThread):
                 self.rightLoadTare = latestSample.liftRight
                 self.dragTare = latestSample.drag
 
-            if (self.updateAoAWingError):
-                self.updateAoAWingError = False
-                self.aoaWingError = latestSample.aoa - self.aoaPlatformTare
+            if (self.updateAoAWingTare):
+                self.updateAoAWingTare = False
+                self.aoaWingError = self.aoaPlatformTare - int(latestSample.aoa)
                 self.persist.setItem("AoA", "WingError", str(self.aoaWingError))
 
-            if (self.updateAirspeedZero):
-                self.updateAirspeedZero = False
-                self.airspeedZero = latestSample.airspeed
-                self.persist.setItem("Airspeed", "Zero",
-                                     str(self.airspeedZero))
+            if (self.updateAoAPlatformTare):
+                self.updateAoAPlatformTare = False
+                self.aoaPlatformTare = int(latestSample.aoa)
+                self.persist.setItem("AoA", "PlatformTare", 
+                                     str(self.aoaPlatformTare))
+                self.aoaWingError = self.aoaPlatformTare
+                self.persist.setItem("AoA", "WingError", str(self.aoaWingError))
+
+            if (self.updateAirspeedTare):
+                self.updateAirspeedTare = False
+                self.airspeedTare = int(latestSample.airspeed)
+                self.persist.setItem("Airspeed", "Tare",
+                                     str(self.airspeedTare))
 
             # Get the latest lift & drag, adjust for tare
             rawLiftLeft = latestSample.liftLeft - self.leftLoadTare
             rawLiftCenter = latestSample.liftCenter - self.centerLoadTare
             rawLiftRight = latestSample.liftRight - self.rightLoadTare
-            rawDrag = latestSample.drag - self.dragTare
+            netDrag = latestSample.drag - self.dragTare
 
             # Scale to taste
             liftLeft = rawLiftLeft * self.liftLeftScaling
@@ -192,20 +230,21 @@ class SampleCollector(QThread):
             pitchMoment = (liftCenter * 5.63) + \
                             (liftLeft + liftRight) * 1.44
 
-            # Get the AoA
-            self.platformAoA = (latestSample.aoa - self.aoaPlatformTare) * \
+            # Crunch the platform AoA and the Wing AoA
+            platformAoA = (int(latestSample.aoa) - self.aoaWingError) * \
                           self.aoaSlope
             
-            wingAoA = (latestSample.aoa - self.aoaWingError - \
-                       self.aoaPlatformTare) * self.aoaSlope
+            wingAoA = latestSample.aoa * self.aoaSlope
 
             # Scale the drag value and remove the lift component
-            self.scaleDrag = rawDrag * self.dragScaling
-            drag = (self.scaleDrag - (totalLift * sin(radians(self.platformAoA)))) / cos(radians(self.platformAoA))
+            self.totalDrag = netDrag * self.dragScaling
+            
+            drag = (self.totalDrag - \
+                (totalLift * sin(radians(platformAoA)))) / cos(radians(platformAoA))
 
             # Compute actual airspeed
             asCounts = latestSample.airspeed
-            asPressure = (asCounts - self.airspeedZero) / 1379.3
+            asPressure = (asCounts - self.airspeedTare) / 1379.3
             try:
                 airspeed = self.airspeedSlope * sqrt((asPressure * 144.0 * 2.0) / 0.002378) * 0.682
             except ValueError:
@@ -239,7 +278,10 @@ class SampleCollector(QThread):
             processedSample = ProcessedSample(volts,
                                               amps,
                                               (volts * amps),
+                                              latestSample.aoa,
                                               wingAoA,
+                                              platformAoA,
+                                              latestSample.airspeed,
                                               fAirspeed,
                                               fHotwire,
                                               fLiftLeft,
