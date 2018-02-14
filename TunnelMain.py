@@ -19,8 +19,8 @@ from PyQt5.QtCore import Qt, pyqtSlot, QTime
 from PyQt5.QtWidgets import QTableWidgetItem
 
 import Tunnel_Model
+from DialogCalibrate import Ui_DialogCalibrate
 from TunnelConfig import TunnelConfig
-from TunnelPersist import TunnelPersist
 from SensorSimulator import SensorSimulator
 from SensorReader import SensorReader
 from SampleCollector import SampleCollector
@@ -37,7 +37,6 @@ class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
     dragGraph = None
     pitchMomentGraph = None
     airspeedGraph = None
-    persist = TunnelPersist()
     config = TunnelConfig()
     
     def __init__(self, qApp):
@@ -45,19 +44,24 @@ class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
         self.qApp = qApp
         self.setupUi(self)
 
+        # setup the calibrattion dialog
+        self.dialogCalibrate = QtWidgets.QDialog()
+        self.dialogCalibrateUi = Ui_DialogCalibrate()
+        self.dialogCalibrateUi.setupUi(self.dialogCalibrate)
+
         # Update displayed sample rate
         sampleRate = self.config.getItem("General", "samplerate")
 
         self.outSampleRate.display(sampleRate)
 
         # Connect buttons to their corresponding functions
-        self.btnAoAZero.clicked.connect(self.aoaZero)
-        self.btnAoAZero.clicked.connect(self.airspeedZero)
+        self.btnCalibrate.clicked.connect(self.showCalibrateDialog)
         self.btnLoadTare.clicked.connect(self.loadTare)
         self.btnSaveResults.clicked.connect(self.saveResults)
 
-        # Start with tare buttons disabled
-        self.btnAoAZero.setDisabled(True)
+        self.dialogCalibrateUi.btnAirspeedTare.clicked.connect(self.airspeedTare)
+        self.dialogCalibrateUi.btnAoAWingTare.clicked.connect(self.aoaWingTare)
+        self.dialogCalibrateUi.btnAoAPlatformTare.clicked.connect(self.aoaPlatformTare)
 
         # Set the Saving... text to nothing for now. When the Save button
         # is clicked, we'll light it up for a moment.
@@ -66,20 +70,18 @@ class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
         # Show the directory path
         destDirname = self.config.getItem("General", "DataDestinationDir")
         self.lblDirPath.setText(destDirname)
-       
-        self.runNameText = self.persist.getItem("General", "RunName")
-        if self.runNameText != None:
-             self.inpRunName.setText(self.runNameText)
+ 
+    def showCalibrateDialog(self):
+        self.dialogCalibrate.show()
 
-        self.configurationText = self.persist.getItem("General", "Configuration")
-        if self.configurationText != None:
-             self.inpConfiguration.setText(self.configurationText)
+    def aoaWingTare(self):
+        self.sampleCollector.setAoAWingTare()
 
-    def aoaZero(self):
-        self.sampleCollector.setAoAZero()
+    def aoaPlatformTare(self):
+        self.sampleCollector.setAoAPlatformTare()
 
-    def airspeedZero(self):
-        self.sampleCollector.setAirspeedZero()
+    def airspeedTare(self):
+        self.sampleCollector.setAirspeedTare()
 
     def loadTare(self):
         self.sampleCollector.setLoadTare()
@@ -196,26 +198,28 @@ class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
         power = float('%.1f' % power)
         self.outPower.display(str(power))
 
+    def setRawAoA(self, aoa):
+        self.dialogCalibrateUi.txtRawAoA.setText(str(aoa))
+        
+    def setRawAirspeed(self, airspeed):
+        self.dialogCalibrateUi.txtRawAirspeed.setText(str(airspeed))
+       
     def saveRunNameAndConfiguration(self):
-        if self.runNameText != self.inpRunName.text():
-            self.runNameText = self.inpRunName.text()
-            self.persist.setItem("General", "RunName", self.runNameText)
-            
-        if self.configurationText != self.inpConfiguration.text():
-            self.configurationText = self.inpConfiguration.text()
-            self.persist.setItem("General", "Configuration", self.configurationText)
+        if self.savedRunNameText != self.inpRunName.text():
+            self.savedRunNameText = self.inpRunName.text()
+            self.sampleCollector.saveRunName(self.savedRunNameText)
 
+        if self.savedConfigurationText != self.inpConfiguration.text():
+            self.savedConfigurationText = self.inpConfiguration.text()
+            self.sampleCollector.saveConfiguration(self.savedConfigurationText)
+            
     @pyqtSlot(ProcessedSample)
     def refreshWindow(self, currentData):
+        self.setRawAoA(currentData.rawAoA)
+        self.setRawAirspeed(currentData.rawAirspeed)
         
-        # Protect wing error from being changed if tunnel is running
-        if currentData.airspeed > 15.0:
-            self.btnAoAZero.setDisabled(True)
-        elif currentData.airspeed < 10.0:
-            self.btnAoAZero.setEnabled(True)
-
         self.setPower(currentData.volts * currentData.amps)
-        self.setAoa(currentData.aoa)
+        self.setAoa(currentData.wingAoA)
         self.setAirspeed(currentData.airspeed)
         self.setAnenometer(currentData.hotwire)
 
@@ -254,6 +258,13 @@ class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
         self.sampleCollector.updateWindow.connect(self.refreshWindow)
         self.sampleCollector.daemon = True
         self.sampleCollector.start()
+        
+        # Once SampleCollector is up and running, we can ask it for the 
+        # previously saved run name and configuraiton
+        self.savedRunNameText = self.sampleCollector.getRunName()
+        self.savedConfigurationText = self.sampleCollector.getConfiguration()
+        self.inpRunName.setText(self.savedRunNameText)
+        self.inpConfiguration.setText(self.savedConfigurationText)
 
     def stopSampleCollector(self):
         self.sampleCollector.terminate()
