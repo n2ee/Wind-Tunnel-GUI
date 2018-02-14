@@ -20,6 +20,7 @@ from PyQt5.QtWidgets import QTableWidgetItem
 
 import Tunnel_Model
 from TunnelConfig import TunnelConfig
+from TunnelPersist import TunnelPersist
 from SensorSimulator import SensorSimulator
 from SensorReader import SensorReader
 from SampleCollector import SampleCollector
@@ -36,12 +37,13 @@ class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
     dragGraph = None
     pitchMomentGraph = None
     airspeedGraph = None
-
+    persist = TunnelPersist()
+    config = TunnelConfig()
+    
     def __init__(self, qApp):
         super().__init__()
         self.qApp = qApp
         self.setupUi(self)
-        self.config = TunnelConfig()
 
         # Update displayed sample rate
         sampleRate = self.config.getItem("General", "samplerate")
@@ -65,6 +67,14 @@ class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
         destDirname = self.config.getItem("General", "DataDestinationDir")
         self.lblDirPath.setText(destDirname)
        
+        self.runNameText = self.persist.getItem("General", "RunName")
+        if self.runNameText != None:
+             self.inpRunName.setText(self.runNameText)
+
+        self.configurationText = self.persist.getItem("General", "Configuration")
+        if self.configurationText != None:
+             self.inpConfiguration.setText(self.configurationText)
+
     def aoaZero(self):
         self.sampleCollector.setAoAZero()
 
@@ -186,9 +196,18 @@ class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
         power = float('%.1f' % power)
         self.outPower.display(str(power))
 
+    def saveRunNameAndConfiguration(self):
+        if self.runNameText != self.inpRunName.text():
+            self.runNameText = self.inpRunName.text()
+            self.persist.setItem("General", "RunName", self.runNameText)
+            
+        if self.configurationText != self.inpConfiguration.text():
+            self.configurationText = self.inpConfiguration.text()
+            self.persist.setItem("General", "Configuration", self.configurationText)
+
     @pyqtSlot(ProcessedSample)
     def refreshWindow(self, currentData):
-
+        
         # Protect wing error from being changed if tunnel is running
         if currentData.airspeed > 15.0:
             self.btnAoAZero.setDisabled(True)
@@ -210,6 +229,7 @@ class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
         self.updateGraphs(currentData.totalLift, currentData.drag,
                           currentData.pitchMoment, currentData.airspeed)
 
+        self.saveRunNameAndConfiguration()
 
     def startSensorReader(self, tunnelWindow, tunnelDataQ):
         useSimulatedData = self.config.getItem("General",
