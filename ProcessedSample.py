@@ -10,7 +10,7 @@ import datetime
 class ProcessedSample(object):
 
     def __init__(self, volts = 0.0, amps = 0.0, watts = 0.0,
-                 rawAoa = 0.0, aoa = 0.0,
+                 rawAoA = 0.0, wingAoA = 0.0, platformAoA = 0.0,
                  rawAirspeed = 0.0, airspeed = 0.0, hotwire = 0.0, 
                  liftLeft = 0.0, liftCenter = 0.0, liftRight = 0.0, 
                  totalLift = 0.0, totalLiftStdDev = 0.0, 
@@ -21,8 +21,9 @@ class ProcessedSample(object):
         self.volts = volts
         self.amps = amps
         self.watts = watts
-        self.rawAoa = rawAoa
-        self.aoa = aoa
+        self.rawAoA = rawAoA
+        self.wingAoA = wingAoA
+        self.platformAoA = platformAoA
         self.rawAirspeed = rawAirspeed
         self.airspeed = airspeed
         self.hotwire = hotwire
@@ -44,7 +45,7 @@ class ProcessedSample(object):
     """
     @staticmethod
     def header():
-        return "Volts, Amps, Watts, Raw AoA, AoA Deg, Raw Airspeed, Airspeed MPH, " \
+        return "Volts, Amps, Watts, Wing AoA Deg, Platform AoA Deg, Raw Airspeed, Airspeed MPH, " \
                "Hotwire MPH, LiftLeft Kg, LiftCenter Kg, LiftRight Kg, " \
                "TotalLift Kg, TotalLiftStdDev, " \
                "Drag Kg, DragStdDev, PitchMoment Kg-in, PitchMomentStdDev, " \
@@ -56,7 +57,7 @@ class ProcessedSample(object):
                 "%f, %f, %f, " \
                 "%f, %f, %f, " \
                 "%f, %f, %f, %s" % \
-            (self.volts, self.amps, self.watts, self.rawAoa, self.aoa, 
+            (self.volts, self.amps, self.watts, self.wingAoA, self.platformAoA, 
              self.rawAirspeed, self.airspeed, self.hotwire, 
              self.liftLeft, self.liftCenter, self.liftRight, 
              self.totalLift, self.totalLiftStdDev, self.drag, 
