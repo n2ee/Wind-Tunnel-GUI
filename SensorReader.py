@@ -97,11 +97,7 @@ class SensorReader(QThread):
     def run(self):
         currentSample = SensorSample()
         
-        while (True):
-            
-            # Need to add the following items:
-            # currentSample.rpm =
-            
+        while (True):           
             try:
                 currentSample.airspeed = self.airspeed.getScaledValue(1000)
                 currentSample.hotwire = self.hotwire.getScaledValue(1000)
