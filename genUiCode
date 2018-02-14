@@ -1,0 +1,4 @@
+#!/bin/bash
+
+pyuic5 -x -o Tunnel_Model.py Tunnel_Model.ui
+pyuic5 -x -o DialogCalibrate.py DialogCalibrate.ui
