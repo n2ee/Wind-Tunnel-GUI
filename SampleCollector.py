@@ -146,7 +146,7 @@ class SampleCollector(QThread):
         airspeedFilter = RollingAverageFilter(10)
         hotwireFilter = RollingAverageFilter(10)
         wingAoA = 0.0
-        platformAoA = 0.0
+        self.platformAoA = 0.0
         drag = 0.0
 
         while (True):
