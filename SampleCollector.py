@@ -152,11 +152,11 @@ class SampleCollector(QThread):
     def dumpData(self, processedSample):
         if self.dumpInterval == 10:
             self.dumpInterval = 0
-            print("V=%f, A=%f, as=%f, hw=%f, wingAoA=%f, platAoA=%f, totalDrag=%f, drag=%f, LL=%f, LC=%f, LR=%f, TL=%f" \
+            print("V=%f, A=%f, as=%f, hw=%f, wingAoA=%f, platAoA=%f, uncorrDrag=%f, drag=%f, LL=%f, LC=%f, LR=%f, TL=%f" \
                   % (processedSample.volts, processedSample.amps,
                      processedSample.airspeed, processedSample.hotwire,
                      processedSample.wingAoA, processedSample.platformAoA, 
-                     self.totalDrag, processedSample.drag,
+                     self.uncorrectedDrag, processedSample.drag,
                      processedSample.liftLeft, processedSample.liftCenter,
                      processedSample.liftRight, processedSample.totalLift))
         else:
@@ -212,7 +212,7 @@ class SampleCollector(QThread):
             rawLiftLeft = latestSample.liftLeft - self.leftLoadTare
             rawLiftCenter = latestSample.liftCenter - self.centerLoadTare
             rawLiftRight = latestSample.liftRight - self.rightLoadTare
-            netDrag = latestSample.drag - self.dragTare
+            netDragCounts = latestSample.drag - self.dragTare
 
             # Scale to taste
             liftLeft = rawLiftLeft * self.liftLeftScaling
@@ -231,15 +231,15 @@ class SampleCollector(QThread):
                             (liftLeft + liftRight) * 1.44
 
             # Crunch the platform AoA and the Wing AoA
-            platformAoA = (int(latestSample.aoa) - self.aoaWingError) * \
-                          self.aoaSlope
+            platformAoA = (int(latestSample.aoa) - self.aoaPlatformTare) * self.aoaSlope
             
-            wingAoA = latestSample.aoa * self.aoaSlope
+            wingAoA = (int(latestSample.aoa) + \
+                       self.aoaWingError - self.aoaPlatformTare) * self.aoaSlope
 
             # Scale the drag value and remove the lift component
-            self.totalDrag = netDrag * self.dragScaling
+            self.uncorrectedDrag = netDragCounts * self.dragScaling
             
-            drag = (self.totalDrag - \
+            drag = (self.uncorrectedDrag - \
                 (totalLift * sin(radians(platformAoA)))) / cos(radians(platformAoA))
 
             # Compute actual airspeed
