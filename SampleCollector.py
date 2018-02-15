@@ -242,6 +242,10 @@ class SampleCollector(QThread):
             drag = (self.uncorrectedDrag - \
                 (totalLift * sin(radians(platformAoA)))) / cos(radians(platformAoA))
 
+            # Could this actually be
+            # drag = self.uncorrectedDrag * cos(radians(platformAoA)) - \
+            #       totalLift * sin(radians(platformAoA))
+            
             # Compute actual airspeed
             asCounts = latestSample.airspeed
             asPressure = (asCounts - self.airspeedTare) / 1379.3
