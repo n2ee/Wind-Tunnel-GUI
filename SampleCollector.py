@@ -64,7 +64,7 @@ class SampleCollector(QThread):
         self.ampsZero = float(config.getItem("Amps", "zero"))
         self.shuntOhms = float(config.getItem("Amps", "shunt"))
 
-        self.airspeedSlope = float(config.getItem("Airspeed",  "slope"))
+        self.airspeedSlope = float(config.getItem("Airspeed", "slope"))
         self.airspeedLowerLimit = float(config.getItem("Airspeed",
                                                        "lowerlimit"))
 
