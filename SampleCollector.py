@@ -244,7 +244,7 @@ class SampleCollector(QThread):
                             (liftLeft + liftRight) * 1.44
 
             # Crunch the platform AoA and the Wing AoA
-            platformAoA += (int(latestSample.aoa) - self.aoaPlatformTare) * self.aoaSlope
+            platformAoA = (int(latestSample.aoa) - self.aoaPlatformTare) * self.aoaSlope
 
             # Add in the previously determined AoA platform offset
             platformAoA += self.aoaPlatformOffset
@@ -258,12 +258,11 @@ class SampleCollector(QThread):
             # Scale the drag value and remove the lift component
             self.uncorrectedDrag = netDragCounts * self.dragScaling
             
-            drag = (self.uncorrectedDrag - \
-                (totalLift * sin(radians(platformAoA)))) / cos(radians(platformAoA))
+            # drag = (self.uncorrectedDrag - \
+            #     (totalLift * sin(radians(platformAoA)))) / cos(radians(platformAoA))
 
-            # Could this actually be
-            # drag = self.uncorrectedDrag * cos(radians(platformAoA)) - \
-            #       totalLift * sin(radians(platformAoA))
+            drag = self.uncorrectedDrag * cos(radians(platformAoA)) + \
+                   totalLift * sin(radians(platformAoA))
             
             # Compute actual airspeed
             asCounts = latestSample.airspeed
