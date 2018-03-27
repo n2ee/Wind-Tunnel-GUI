@@ -342,7 +342,7 @@
    <widget class="QLabel" name="lblAoA">
     <property name="geometry">
      <rect>
-      <x>10</x>
+      <x>20</x>
       <y>140</y>
       <width>41</width>
       <height>20</height>
@@ -358,7 +358,7 @@
    <widget class="QLCDNumber" name="outAoaDeg">
     <property name="geometry">
      <rect>
-      <x>60</x>
+      <x>70</x>
       <y>140</y>
       <width>61</width>
       <height>31</height>
@@ -371,10 +371,10 @@
      <enum>QLCDNumber::Flat</enum>
     </property>
    </widget>
-   <widget class="QLabel" name="lblDeg">
+   <widget class="QLabel" name="lblAoADeg">
     <property name="geometry">
      <rect>
-      <x>130</x>
+      <x>140</x>
       <y>150</y>
       <width>31</width>
       <height>16</height>
@@ -711,6 +711,51 @@
      <string>Saving...</string>
     </property>
    </widget>
+   <widget class="QLabel" name="lblAoAOffsetDeg">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>190</y>
+      <width>31</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Deg</string>
+    </property>
+   </widget>
+   <widget class="QLCDNumber" name="outAoaOffsetDeg">
+    <property name="geometry">
+     <rect>
+      <x>70</x>
+      <y>180</y>
+      <width>61</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="digitCount">
+     <number>4</number>
+    </property>
+    <property name="segmentStyle">
+     <enum>QLCDNumber::Flat</enum>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblAoAOffset">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>180</y>
+      <width>41</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Offset:</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
    <zorder>outAnemometerFps</zorder>
    <zorder>btnLoadTare</zorder>
    <zorder>inpRunName</zorder>
@@ -734,7 +779,7 @@
    <zorder>outSampleRate</zorder>
    <zorder>lblAoA</zorder>
    <zorder>outAoaDeg</zorder>
-   <zorder>lblDeg</zorder>
+   <zorder>lblAoADeg</zorder>
    <zorder>lblPower</zorder>
    <zorder>outPower</zorder>
    <zorder>lblWatts</zorder>
@@ -749,6 +794,9 @@
    <zorder>inpComments</zorder>
    <zorder>lblComments</zorder>
    <zorder>lblSaving</zorder>
+   <zorder>lblAoAOffsetDeg</zorder>
+   <zorder>outAoaOffsetDeg</zorder>
+   <zorder>lblAoAOffset</zorder>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'Tunnel_Model.ui'
 #
-# Created by: PyQt5 UI code generator 5.9.2
+# Created by: PyQt5 UI code generator 5.10
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -102,17 +102,17 @@ class Ui_MainWindow(object):
         self.outSampleRate.setSegmentStyle(QtWidgets.QLCDNumber.Flat)
         self.outSampleRate.setObjectName("outSampleRate")
         self.lblAoA = QtWidgets.QLabel(self.centralwidget)
-        self.lblAoA.setGeometry(QtCore.QRect(10, 140, 41, 20))
+        self.lblAoA.setGeometry(QtCore.QRect(20, 140, 41, 20))
         self.lblAoA.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.lblAoA.setObjectName("lblAoA")
         self.outAoaDeg = QtWidgets.QLCDNumber(self.centralwidget)
-        self.outAoaDeg.setGeometry(QtCore.QRect(60, 140, 61, 31))
+        self.outAoaDeg.setGeometry(QtCore.QRect(70, 140, 61, 31))
         self.outAoaDeg.setDigitCount(4)
         self.outAoaDeg.setSegmentStyle(QtWidgets.QLCDNumber.Flat)
         self.outAoaDeg.setObjectName("outAoaDeg")
-        self.lblDeg = QtWidgets.QLabel(self.centralwidget)
-        self.lblDeg.setGeometry(QtCore.QRect(130, 150, 31, 16))
-        self.lblDeg.setObjectName("lblDeg")
+        self.lblAoADeg = QtWidgets.QLabel(self.centralwidget)
+        self.lblAoADeg.setGeometry(QtCore.QRect(140, 150, 31, 16))
+        self.lblAoADeg.setObjectName("lblAoADeg")
         self.lblPower = QtWidgets.QLabel(self.centralwidget)
         self.lblPower.setGeometry(QtCore.QRect(400, 230, 41, 20))
         self.lblPower.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
@@ -208,6 +208,18 @@ class Ui_MainWindow(object):
         self.lblSaving.setPalette(palette)
         self.lblSaving.setFocusPolicy(QtCore.Qt.NoFocus)
         self.lblSaving.setObjectName("lblSaving")
+        self.lblAoAOffsetDeg = QtWidgets.QLabel(self.centralwidget)
+        self.lblAoAOffsetDeg.setGeometry(QtCore.QRect(140, 190, 31, 16))
+        self.lblAoAOffsetDeg.setObjectName("lblAoAOffsetDeg")
+        self.outAoaOffsetDeg = QtWidgets.QLCDNumber(self.centralwidget)
+        self.outAoaOffsetDeg.setGeometry(QtCore.QRect(70, 180, 61, 31))
+        self.outAoaOffsetDeg.setDigitCount(4)
+        self.outAoaOffsetDeg.setSegmentStyle(QtWidgets.QLCDNumber.Flat)
+        self.outAoaOffsetDeg.setObjectName("outAoaOffsetDeg")
+        self.lblAoAOffset = QtWidgets.QLabel(self.centralwidget)
+        self.lblAoAOffset.setGeometry(QtCore.QRect(20, 180, 41, 20))
+        self.lblAoAOffset.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.lblAoAOffset.setObjectName("lblAoAOffset")
         self.outAnemometerFps.raise_()
         self.btnLoadTare.raise_()
         self.inpRunName.raise_()
@@ -231,7 +243,7 @@ class Ui_MainWindow(object):
         self.outSampleRate.raise_()
         self.lblAoA.raise_()
         self.outAoaDeg.raise_()
-        self.lblDeg.raise_()
+        self.lblAoADeg.raise_()
         self.lblPower.raise_()
         self.outPower.raise_()
         self.lblWatts.raise_()
@@ -246,6 +258,9 @@ class Ui_MainWindow(object):
         self.inpComments.raise_()
         self.lblComments.raise_()
         self.lblSaving.raise_()
+        self.lblAoAOffsetDeg.raise_()
+        self.outAoaOffsetDeg.raise_()
+        self.lblAoAOffset.raise_()
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
@@ -272,7 +287,7 @@ class Ui_MainWindow(object):
         self.lblKgStd.setText(_translate("MainWindow", "sd Kg"))
         self.lblSampleRate.setText(_translate("MainWindow", "Sample Rate:"))
         self.lblAoA.setText(_translate("MainWindow", "AoA:"))
-        self.lblDeg.setText(_translate("MainWindow", "Deg"))
+        self.lblAoADeg.setText(_translate("MainWindow", "Deg"))
         self.lblPower.setText(_translate("MainWindow", "Power:"))
         self.lblWatts.setText(_translate("MainWindow", "W"))
         self.lblAnemometer.setText(_translate("MainWindow", "Anemometer:"))
@@ -284,6 +299,8 @@ class Ui_MainWindow(object):
         self.lblDirPath.setText(_translate("MainWindow", "Dir Path"))
         self.lblComments.setText(_translate("MainWindow", "Comments:"))
         self.lblSaving.setText(_translate("MainWindow", "Saving..."))
+        self.lblAoAOffsetDeg.setText(_translate("MainWindow", "Deg"))
+        self.lblAoAOffset.setText(_translate("MainWindow", "Offset:"))
 
 
 if __name__ == "__main__":
