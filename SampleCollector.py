@@ -35,6 +35,7 @@ class SampleCollector(QThread):
     aoaTare = 0.0 # We call this 'tare' to distinguish from the y-intercept of the raw value
     updateAoAWingTare = False
     updateAoAPlatformTare = False
+    updateAoAPlatformOffset = False
     airspeedTare = 0
     updateAirspeedTare = False
     dumpInterval = 0
@@ -64,7 +65,7 @@ class SampleCollector(QThread):
         self.ampsZero = float(config.getItem("Amps", "zero"))
         self.shuntOhms = float(config.getItem("Amps", "shunt"))
 
-        self.airspeedSlope = float(config.getItem("Airspeed",  "slope"))
+        self.airspeedSlope = float(config.getItem("Airspeed", "slope"))
         self.airspeedLowerLimit = float(config.getItem("Airspeed",
                                                        "lowerlimit"))
 
@@ -85,6 +86,12 @@ class SampleCollector(QThread):
             self.aoaPlatformTare = 0
         else:
             self.aoaPlatformTare = int(aoaPlatformTare)
+
+        aoaPlatformOffset = self.persist.getItem("AoA", "PlatformOffset")
+        if aoaPlatformOffset == None:
+            self.aoaPlatformOffset = 0.0
+        else:
+            self.aoaPlatformOffset = float(aoaPlatformOffset)
 
         airspeedTare = self.persist.getItem("Airspeed", "Tare")
         if airspeedTare == None:
@@ -115,6 +122,11 @@ class SampleCollector(QThread):
         except IOError:
             print ("Could not open: ", destFile)
             self.saveSamples = False
+
+    def setAoAPlatformOffset(self, offset):
+        self.aoaPlatformOffset = offset
+        self.persist.setItem("AoA", "PlatformOffset", 
+                             str(self.aoaPlatformOffset))
 
     def setLoadTare(self):
         self.updateLoadTare = True
@@ -177,6 +189,7 @@ class SampleCollector(QThread):
         hotwireFilter = RollingAverageFilter(10)
         wingAoA = 0
         platformAoA = 0
+        
         drag = 0.0
 
         while (True):
@@ -231,17 +244,27 @@ class SampleCollector(QThread):
                             (liftLeft + liftRight) * 1.44
 
             # Crunch the platform AoA and the Wing AoA
-            platformAoA = (int(latestSample.aoa) - self.aoaPlatformTare) * self.aoaSlope
-            
+            platformAoA += (int(latestSample.aoa) - self.aoaPlatformTare) * self.aoaSlope
+
+            # Add in the previously determined AoA platform offset
+            platformAoA += self.aoaPlatformOffset
+                        
             wingAoA = (int(latestSample.aoa) + \
                        self.aoaWingError - self.aoaPlatformTare) * self.aoaSlope
 
+            # And again, add in the aoa platform offset
+            wingAoA += self.aoaPlatformOffset
+            
             # Scale the drag value and remove the lift component
             self.uncorrectedDrag = netDragCounts * self.dragScaling
             
             drag = (self.uncorrectedDrag - \
                 (totalLift * sin(radians(platformAoA)))) / cos(radians(platformAoA))
 
+            # Could this actually be
+            # drag = self.uncorrectedDrag * cos(radians(platformAoA)) - \
+            #       totalLift * sin(radians(platformAoA))
+            
             # Compute actual airspeed
             asCounts = latestSample.airspeed
             asPressure = (asCounts - self.airspeedTare) / 1379.3

@@ -21,6 +21,7 @@ from PyQt5.QtWidgets import QTableWidgetItem
 import Tunnel_Model
 from DialogCalibrate import Ui_DialogCalibrate
 from TunnelConfig import TunnelConfig
+from TunnelPersist import TunnelPersist
 from SensorSimulator import SensorSimulator
 from SensorReader import SensorReader
 from SampleCollector import SampleCollector
@@ -59,10 +60,23 @@ class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
         self.btnLoadTare.clicked.connect(self.loadTare)
         self.btnSaveResults.clicked.connect(self.saveResults)
 
+        self.dialogCalibrateUi.btnDone.clicked.connect(self.calibrationDone)
         self.dialogCalibrateUi.btnAirspeedTare.clicked.connect(self.airspeedTare)
         self.dialogCalibrateUi.btnAoAWingTare.clicked.connect(self.aoaWingTare)
         self.dialogCalibrateUi.btnAoAPlatformTare.clicked.connect(self.aoaPlatformTare)
 
+        # Initialize the platform offset from the persist file. Can't wait
+        # until SampleCollector is alive, so we read it directly from the
+        # file. Woe be unto me if I change the name of the persist value...
+        aoaPlatformOffset = TunnelPersist().getItem("AoA", "PlatformOffset")
+        if aoaPlatformOffset == None:
+            aoaPlatformOffset = 0.0
+        else:
+            aoaPlatformOffset = float(aoaPlatformOffset)
+
+        self.dialogCalibrateUi.inpAoAOffset.setValue(aoaPlatformOffset)
+        self.setAoAOffset(aoaPlatformOffset)
+        
         # Set the Saving... text to nothing for now. When the Save button
         # is clicked, we'll light it up for a moment.
         self.lblSaving.setText("")
@@ -74,6 +88,11 @@ class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
     def showCalibrateDialog(self):
         self.dialogCalibrate.show()
 
+    def calibrationDone(self):
+        offset = self.dialogCalibrateUi.inpAoAOffset.value()
+        self.sampleCollector.setAoAPlatformOffset(offset)
+        self.setAoAOffset(offset)
+        
     def aoaWingTare(self):
         self.sampleCollector.setAoAWingTare()
 
@@ -140,6 +159,10 @@ class TunnelGui(QtWidgets.QMainWindow, Tunnel_Model.Ui_MainWindow):
     def setAoa(self, aoa):
         aoa = float('%.1f' % aoa)
         self.outAoaDeg.display(str(aoa))
+
+    def setAoAOffset(self, offset):
+        offset = float('%.1f' % offset)
+        self.outAoaOffsetDeg.display(str(offset))
 
     def setAirspeed(self, speed):
         speed = float('%.1f' % speed)

@@ -78,6 +78,12 @@ if __name__ == "__main__":
     else:
         aoaZero = float(aoaZero)
 
+    aoaOffset = tunnelPersist.getItem("AoA", "Offset")
+    if aoaOffset == None:
+        aoaOffset = 0.0
+    else:
+        aoaOffset = float(aoaOffset)
+
     airspeedZero = tunnelPersist.getItem("Airspeed", "Zero")
     if airspeedZero == None:
         airspeedZero = 0.0
@@ -85,8 +91,13 @@ if __name__ == "__main__":
         airspeedZero = float(airspeedZero)
 
     print("aoaZero = %f" % aoaZero)
+    print("aoaOffset = %f" % aoaOffset)
     print("airspeedZero = %f" % airspeedZero)
+    
     aoaZero += 1.1
-    airspeedZero += 2.2
+    aoaOffset += 2.2
+    airspeedZero += 3.3
+    
     tunnelPersist.setItem("AoA", "Zero", str(aoaZero))
+    tunnelPersist.setItem("AoA", "Offset", str(aoaOffset))
     tunnelPersist.setItem("Airspeed", "Zero", str(airspeedZero))

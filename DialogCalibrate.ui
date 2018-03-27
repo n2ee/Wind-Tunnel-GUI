@@ -20,7 +20,7 @@
    <property name="geometry">
     <rect>
      <x>260</x>
-     <y>120</y>
+     <y>80</y>
      <width>161</width>
      <height>32</height>
     </rect>
@@ -33,7 +33,7 @@
    <property name="geometry">
     <rect>
      <x>280</x>
-     <y>40</y>
+     <y>20</y>
      <width>81</width>
      <height>21</height>
     </rect>
@@ -54,7 +54,7 @@
    <property name="geometry">
     <rect>
      <x>370</x>
-     <y>40</y>
+     <y>20</y>
      <width>56</width>
      <height>20</height>
     </rect>
@@ -72,7 +72,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>40</y>
+     <y>20</y>
      <width>131</width>
      <height>21</height>
     </rect>
@@ -93,7 +93,7 @@
    <property name="geometry">
     <rect>
      <x>150</x>
-     <y>40</y>
+     <y>20</y>
      <width>56</width>
      <height>20</height>
     </rect>
@@ -111,7 +111,7 @@
    <property name="geometry">
     <rect>
      <x>30</x>
-     <y>90</y>
+     <y>50</y>
      <width>161</width>
      <height>32</height>
     </rect>
@@ -143,13 +143,61 @@
    <property name="geometry">
     <rect>
      <x>260</x>
-     <y>80</y>
+     <y>50</y>
      <width>161</width>
      <height>32</height>
     </rect>
    </property>
    <property name="text">
     <string>Set AoA Platform Tare</string>
+   </property>
+  </widget>
+  <widget class="QDoubleSpinBox" name="inpAoAOffset">
+   <property name="geometry">
+    <rect>
+     <x>350</x>
+     <y>120</y>
+     <width>62</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>14</pointsize>
+    </font>
+   </property>
+   <property name="decimals">
+    <number>1</number>
+   </property>
+   <property name="maximum">
+    <double>90.000000000000000</double>
+   </property>
+   <property name="singleStep">
+    <double>0.100000000000000</double>
+   </property>
+   <property name="value">
+    <double>0.000000000000000</double>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lblAoAOffset">
+   <property name="geometry">
+    <rect>
+     <x>260</x>
+     <y>120</y>
+     <width>81</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>14</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>AoA Offset:</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
    </property>
   </widget>
  </widget>
