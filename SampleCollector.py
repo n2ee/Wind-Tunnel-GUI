@@ -199,7 +199,7 @@ class SampleCollector(QThread):
                 self.aoaPlatformTare = int(latestSample.aoa)
                 self.persist.setItem("AoA", "PlatformTare", 
                                      str(self.aoaPlatformTare))
-                self.aoaWingError = self.aoaPlatformTare
+                self.aoaWingError = 0
                 self.persist.setItem("AoA", "WingError", str(self.aoaWingError))
 
             if (self.updateAirspeedTare):
