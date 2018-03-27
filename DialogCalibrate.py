@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'DialogCalibrate.ui'
 #
-# Created by: PyQt5 UI code generator 5.10
+# Created by: PyQt5 UI code generator 5.9.2
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -19,7 +19,7 @@ class Ui_DialogCalibrate(object):
         self.lblRawAoA = QtWidgets.QLabel(DialogCalibrate)
         self.lblRawAoA.setGeometry(QtCore.QRect(280, 20, 81, 21))
         font = QtGui.QFont()
-        font.setPointSize(18)
+        font.setPointSize(14)
         self.lblRawAoA.setFont(font)
         self.lblRawAoA.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.lblRawAoA.setObjectName("lblRawAoA")
@@ -32,7 +32,7 @@ class Ui_DialogCalibrate(object):
         self.lblRawAirspeed = QtWidgets.QLabel(DialogCalibrate)
         self.lblRawAirspeed.setGeometry(QtCore.QRect(10, 20, 131, 21))
         font = QtGui.QFont()
-        font.setPointSize(18)
+        font.setPointSize(14)
         self.lblRawAirspeed.setFont(font)
         self.lblRawAirspeed.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.lblRawAirspeed.setObjectName("lblRawAirspeed")
@@ -64,7 +64,7 @@ class Ui_DialogCalibrate(object):
         self.inpAoAOffset.setProperty("value", 0.0)
         self.inpAoAOffset.setObjectName("inpAoAOffset")
         self.lblAoAOffset = QtWidgets.QLabel(DialogCalibrate)
-        self.lblAoAOffset.setGeometry(QtCore.QRect(260, 120, 81, 21))
+        self.lblAoAOffset.setGeometry(QtCore.QRect(240, 120, 101, 21))
         font = QtGui.QFont()
         font.setPointSize(14)
         self.lblAoAOffset.setFont(font)
